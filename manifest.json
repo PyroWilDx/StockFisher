@@ -1,0 +1,35 @@
+{
+    "manifest_version": 3,
+    "name": "ChessCheat",
+    "version": "1.0",
+    "description": "ChessCheat",
+    "icons": {
+        "16": "res/imgs/icons/icon16.png",
+        "48": "res/imgs/icons/icon48.png",
+        "128": "res/imgs/icons/icon128.png"
+    },
+    "action": {
+        "default_icon": {
+            "16": "res/imgs/icons/icon16.png",
+            "48": "res/imgs/icons/icon48.png",
+            "128": "res/imgs/icons/icon128.png"
+        }
+    },
+    "permissions": [
+        "activeTab",
+        "scripting"
+    ],
+    "host_permissions": [
+        "https://www.chess.com/*"
+    ],
+    "content_scripts": [
+        {
+            "matches": [
+                "https://www.chess.com/*"
+            ],
+            "js": [
+                "dist/Main.js"
+            ]
+        }
+    ]
+}
