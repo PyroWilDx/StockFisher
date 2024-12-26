@@ -1,16 +1,14 @@
-import ChessCheat from "./ChessCheat";
-
 export default class Debug {
-    public static DisplayChessCom(): void {
-        if (!ChessCheat.currChessBoard) {
+    public static DisplayChessBoard(chessBoard: string[][] | null): void {
+        if (!chessBoard) {
             return;
         }
 
         let boardStr = "";
-        for (const line of ChessCheat.currChessBoard) {
-            for (const square of line) {
-                if (square.length !== 0) {
-                    boardStr += square;
+        for (const boardLine of chessBoard) {
+            for (const currPiece of boardLine) {
+                if (currPiece.length !== 0) {
+                    boardStr += currPiece;
                 } else {
                     boardStr += " ";
                 }

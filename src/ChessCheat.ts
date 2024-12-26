@@ -119,6 +119,9 @@ export default class ChessCheat {
         ChessCheat.UpdateChessBoard();
         ChessCheat.UpdateChessBoardSettings();
 
+        // Debug.DisplayChessBoard(ChessCheat.lastChessBoard);
+        // Debug.DisplayChessBoard(ChessCheat.currChessBoard);
+
         const fen = ChessCheat.ComputeFen();
 
         console.log("ChessCheat: FEN \"" + fen + "\"");
