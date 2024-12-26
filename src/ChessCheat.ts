@@ -19,7 +19,15 @@ export default class ChessCheat {
     public static chessBoard: HTMLElement;
     public static allyClock: HTMLElement;
 
+    public static turnObserver: MutationObserver | null = null;
+
     public static InitChessCheat(): void {
+        ChessCheat.ResetChessCheat();
+
+        ChessCheat.WaitForBoard();
+    }
+
+    public static ResetChessCheat(): void {
         ChessCheat.lastChessBoard = null;
         ChessCheat.currChessBoard = null;
 
@@ -29,15 +37,15 @@ export default class ChessCheat {
         ChessCheat.canBlackCastleQ = true;
 
         ChessCheat.canEnPassantCoords = "-";
-
-        ChessCheat.WaitForBoard();
     }
 
     public static WaitForBoard(): void {
-        const docObserver = new MutationObserver(() => {
+        const boardObserver = new MutationObserver(() => {
             const chessBoard = document.getElementById(ChessCheat.chessBoardId);
             if (chessBoard) {
-                docObserver.disconnect();
+                console.log("ChessCheat: Chess Board Found.");
+
+                boardObserver.disconnect();
 
                 ChessCheat.chessBoard = chessBoard;
 
@@ -47,46 +55,73 @@ export default class ChessCheat {
                 }
                 ChessCheat.allyClock = allyClock;
 
-                for (const className of ChessCheat.allyClock.classList) {
-                    if (className.includes("white")) {
-                        ChessCheat.allyPlayerColor = "w";
-                        ChessCheat.currTurnCount = 0;
-                        break;
-                    }
-
-                    if (className.includes("black")) {
-                        ChessCheat.allyPlayerColor = "b";
-                        ChessCheat.currTurnCount = 1;
-                        break;
-                    }
-                }
-
-                ChessCheat.WaitForTurn();
+                ChessCheat.WaitForGame();
+                ChessCheat.GameOverObserver();
             }
         });
 
-        docObserver.observe(document.body, { childList: true, subtree: true });
+        boardObserver.observe(document.body, { childList: true, subtree: true });
+    }
+
+    public static WaitForGame(): void {
+        const gameObserver = new MutationObserver(() => {
+            const takeOver = document.querySelector<HTMLElement>(".takeover");
+            if (takeOver) {
+                console.log("ChessCheat: Game Start Detected.");
+
+                setTimeout(() => {
+                    ChessCheat.ResetChessCheat();
+
+                    ChessCheat.UpdateAllyPlayerColor();
+
+                    ChessCheat.WaitForTurn();
+                }, 60);
+            }
+        });
+
+        gameObserver.observe(document.body, { childList: true, subtree: true });
+    }
+
+    public static UpdateAllyPlayerColor(): void {
+        for (const className of ChessCheat.allyClock.classList) {
+            if (className.includes("white")) {
+                ChessCheat.allyPlayerColor = "w";
+                ChessCheat.currTurnCount = 0;
+                break;
+            }
+
+            if (className.includes("black")) {
+                ChessCheat.allyPlayerColor = "b";
+                ChessCheat.currTurnCount = 1;
+                break;
+            }
+        }
     }
 
     public static WaitForTurn(): void {
-        const clockObserver = new MutationObserver(() => {
+        ChessCheat.turnObserver = new MutationObserver(() => {
             if (!ChessCheat.allyClock.classList.contains("clock-player-turn")) {
                 return;
             }
 
+            console.log("ChessCheat: Your Turn Detected.");
+
             setTimeout(ChessCheat.SuggestMove, 60);
         });
 
-        clockObserver.observe(ChessCheat.allyClock, { attributes: true });
+        ChessCheat.turnObserver.observe(ChessCheat.allyClock, { attributes: true });
     }
 
     public static SuggestMove(): void {
         ChessCheat.UpdateChessBoard();
         ChessCheat.UpdateChessBoardSettings();
-        console.log(ChessCheat.ComputeFen());
+
+        const fen = ChessCheat.ComputeFen();
+
+        console.log("ChessCheat: FEN \"" + fen + "\"");
     }
 
-    public static UpdateChessBoard() {
+    public static UpdateChessBoard(): void {
         ChessCheat.lastChessBoard = ChessCheat.currChessBoard;
 
         ChessCheat.currChessBoard = [
@@ -125,7 +160,7 @@ export default class ChessCheat {
         }
     }
 
-    public static UpdateChessBoardSettings() {
+    public static UpdateChessBoardSettings(): void {
         if (ChessCheat.lastChessBoard === null || ChessCheat.currChessBoard === null) {
             return;
         }
@@ -265,5 +300,21 @@ export default class ChessCheat {
 
     public static NumCoordsToChessCoords(sqX: number, sqY: number): string {
         return String.fromCharCode(97 + sqX) + sqY;
+    }
+
+    public static GameOverObserver(): void {
+        const gameOverObserver = new MutationObserver(() => {
+            const gameOverModalContent = document.querySelector<HTMLElement>(".game-over-modal-content");
+            if (gameOverModalContent) {
+                console.log("ChessCheat: Game Over Detected.");
+
+                if (ChessCheat.turnObserver) {
+                    ChessCheat.turnObserver.disconnect();
+                }
+            }
+        });
+
+        gameOverObserver.observe(document.body, { childList: true, subtree: true });
+
     }
 }

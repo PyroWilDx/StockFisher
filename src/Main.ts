@@ -5,7 +5,7 @@ import ChessCheat from "./ChessCheat";
         return;
     }
 
-    console.log("ChessCheat");
+    console.log("ChessCheat: Activated.");
 
     ChessCheat.InitChessCheat();
 })();
