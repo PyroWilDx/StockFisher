@@ -4,7 +4,7 @@ export default class ChessCheat {
     public static lastChessBoard: string[][] | null;
     public static currChessBoard: string[][] | null;
 
-    public static currPlayerTurn: string;
+    public static allyPlayerColor: string;
 
     public static canWhiteCastleK: boolean;
     public static canWhiteCastleQ: boolean;
@@ -22,8 +22,6 @@ export default class ChessCheat {
     public static InitChessCheat(): void {
         ChessCheat.lastChessBoard = null;
         ChessCheat.currChessBoard = null;
-
-        ChessCheat.currPlayerTurn = "w";
 
         ChessCheat.canWhiteCastleK = true;
         ChessCheat.canWhiteCastleQ = true;
@@ -51,6 +49,18 @@ export default class ChessCheat {
                 }
                 ChessCheat.allyClock = allyClock;
 
+                for (const className of ChessCheat.allyClock.classList) {
+                    if (className.includes("white")) {
+                        ChessCheat.allyPlayerColor = "w";
+                        break;
+                    }
+
+                    if (className.includes("black")) {
+                        ChessCheat.allyPlayerColor = "b";
+                        break;
+                    }
+                }
+
                 ChessCheat.WaitForTurn();
             }
         });
@@ -64,7 +74,7 @@ export default class ChessCheat {
                 return;
             }
 
-            setTimeout(ChessCheat.SuggestMove, 100);
+            setTimeout(ChessCheat.SuggestMove, 60);
         });
 
         clockObserver.observe(ChessCheat.allyClock, { attributes: true });
@@ -119,8 +129,7 @@ export default class ChessCheat {
             return;
         }
 
-        const lastPlayerTurn = ChessCheat.currPlayerTurn;
-        ChessCheat.currPlayerTurn = lastPlayerTurn !== "w"
+        const oppPlayerColor = ChessCheat.allyPlayerColor !== "w"
             ? "w"
             : "b";
 
@@ -158,7 +167,7 @@ export default class ChessCheat {
                     }
                 }
 
-                if (lastPiece === 'P' && lastPlayerTurn === 'w') {
+                if (lastPiece === 'P' && oppPlayerColor === 'w') {
                     if (sqY === 6) {
                         const lastTargetSq = ChessCheat.lastChessBoard[sqY - 2][sqX];
                         const currTargetSq = ChessCheat.currChessBoard[sqY - 2][sqX];
@@ -166,7 +175,7 @@ export default class ChessCheat {
                             ChessCheat.canEnPassantCoords = ChessCheat.NumCoordsToChessCoords(sqX, sqY - 1);
                         }
                     }
-                } else if (lastPiece === 'p' && lastPlayerTurn === 'b') {
+                } else if (lastPiece === 'p' && oppPlayerColor === 'b') {
                     if (sqY === 1) {
                         const lastTargetSq = ChessCheat.lastChessBoard[sqY + 2][sqX];
                         const currTargetSq = ChessCheat.currChessBoard[sqY + 2][sqX];
@@ -178,7 +187,7 @@ export default class ChessCheat {
             }
         }
 
-        ChessCheat.currTurnCount++;
+        ChessCheat.currTurnCount += 2;
     }
 
     public static async RequestStockFish(fen: string, depth: number): Promise<StockFishResponse | null> {
