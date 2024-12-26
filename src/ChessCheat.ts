@@ -30,8 +30,6 @@ export default class ChessCheat {
 
         ChessCheat.canEnPassantCoords = "-";
 
-        ChessCheat.currTurnCount = 0;
-
         ChessCheat.WaitForBoard();
     }
 
@@ -52,11 +50,13 @@ export default class ChessCheat {
                 for (const className of ChessCheat.allyClock.classList) {
                     if (className.includes("white")) {
                         ChessCheat.allyPlayerColor = "w";
+                        ChessCheat.currTurnCount = -2;
                         break;
                     }
 
                     if (className.includes("black")) {
                         ChessCheat.allyPlayerColor = "b";
+                        ChessCheat.currTurnCount = -1;
                         break;
                     }
                 }
@@ -188,6 +188,53 @@ export default class ChessCheat {
         }
 
         ChessCheat.currTurnCount += 2;
+    }
+
+    public static ComputeFen(): string {
+        let fen = "";
+
+        if (ChessCheat.currChessBoard === null) {
+            return fen;
+        }
+
+        let currEmptyCount = 0;
+        for (const boardLine of ChessCheat.currChessBoard) {
+            for (const currPiece of boardLine) {
+                if (currPiece.length === 0) {
+                    currEmptyCount++;
+                    continue;
+                }
+
+                if (currEmptyCount !== 0) {
+                    fen += currEmptyCount;
+                }
+                currEmptyCount = 0;
+                fen += currPiece;
+            }
+
+            if (currEmptyCount !== 0) {
+                fen += currEmptyCount;
+            }
+            currEmptyCount = 0;
+            fen += "/";
+        }
+
+        fen = fen.substring(0, fen.length - 1);
+        fen += " " + ChessCheat.allyPlayerColor;
+        fen += " ";
+        if (!ChessCheat.canWhiteCastleK && !ChessCheat.canWhiteCastleQ && !ChessCheat.canBlackCastleK && !ChessCheat.canBlackCastleQ) {
+            fen += "-";
+        } else {
+            if (ChessCheat.canWhiteCastleK) fen += "K";
+            if (ChessCheat.canWhiteCastleQ) fen += "Q";
+            if (ChessCheat.canBlackCastleK) fen += "k";
+            if (ChessCheat.canBlackCastleQ) fen += "q";
+        }
+        fen += " " + ChessCheat.canEnPassantCoords;
+        fen += " " + "0";
+        fen += " " + ChessCheat.currTurnCount;
+
+        return fen;
     }
 
     public static async RequestStockFish(fen: string, depth: number): Promise<StockFishResponse | null> {
