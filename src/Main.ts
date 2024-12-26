@@ -7,5 +7,5 @@ import ChessCom from "./ChessCom";
 
     console.log("ChessCheat");
 
-    ChessCom.initChessCom();
+    ChessCom.InitChessCom();
 })();
