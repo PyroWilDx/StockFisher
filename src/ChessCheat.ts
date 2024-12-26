@@ -125,6 +125,19 @@ export default class ChessCheat {
         const fen = ChessCheat.ComputeFen();
 
         console.log("ChessCheat: FEN \"" + fen + "\"");
+
+        ChessCheat.RequestStockFish(fen, 10)
+            .then((stockFishResponse) => {
+                if (!stockFishResponse) {
+                    return;
+                }
+
+                console.log(stockFishResponse);
+            })
+            .catch((error) => {
+                console.log("ChessCheat: Error Fetching StockFish Response.");
+                console.log(error);
+            });
     }
 
     public static UpdateChessBoard(): void {
