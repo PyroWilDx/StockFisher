@@ -1,5 +1,11 @@
+import ChessCom from "./ChessCom";
+
 (() => {
-    if (window.location.hostname === "www.chess.com") {
-        console.log("ChessCheat");
+    if (window.location.hostname !== "www.chess.com") {
+        return;
     }
+
+    console.log("ChessCheat");
+
+    ChessCom.initChessCom();
 })();
