@@ -37,6 +37,8 @@ export default class ChessCheat {
         ChessCheat.canBlackCastleQ = true;
 
         ChessCheat.canEnPassantCoords = "-";
+
+        ChessCheat.currTurnCount = 0;
     }
 
     public static WaitForBoard(): void {
@@ -56,7 +58,6 @@ export default class ChessCheat {
                 ChessCheat.allyClock = allyClock;
 
                 ChessCheat.WaitForGame();
-                ChessCheat.GameOverObserver();
             }
         });
 
@@ -69,12 +70,16 @@ export default class ChessCheat {
             if (takeOver) {
                 console.log("ChessCheat: Game Start Detected.");
 
+                gameObserver.disconnect();
+
                 setTimeout(() => {
                     ChessCheat.ResetChessCheat();
 
                     ChessCheat.UpdateAllyPlayerColor();
 
                     ChessCheat.WaitForTurn();
+
+                    ChessCheat.GameOverObserver();
                 }, 60);
             }
         });
@@ -86,13 +91,11 @@ export default class ChessCheat {
         for (const className of ChessCheat.allyClock.classList) {
             if (className.includes("white")) {
                 ChessCheat.allyPlayerColor = "w";
-                ChessCheat.currTurnCount = 0;
                 break;
             }
 
             if (className.includes("black")) {
                 ChessCheat.allyPlayerColor = "b";
-                ChessCheat.currTurnCount = 1;
                 break;
             }
         }
@@ -223,7 +226,7 @@ export default class ChessCheat {
             }
         }
 
-        ChessCheat.currTurnCount += 2;
+        ChessCheat.currTurnCount++;
     }
 
     public static ComputeFen(): string {
@@ -308,13 +311,16 @@ export default class ChessCheat {
             if (gameOverModalContent) {
                 console.log("ChessCheat: Game Over Detected.");
 
+                gameOverObserver.disconnect();
+
                 if (ChessCheat.turnObserver) {
                     ChessCheat.turnObserver.disconnect();
                 }
+
+                ChessCheat.WaitForGame();
             }
         });
 
         gameOverObserver.observe(document.body, { childList: true, subtree: true });
-
     }
 }
