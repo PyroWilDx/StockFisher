@@ -50,13 +50,13 @@ export default class ChessCheat {
                 for (const className of ChessCheat.allyClock.classList) {
                     if (className.includes("white")) {
                         ChessCheat.allyPlayerColor = "w";
-                        ChessCheat.currTurnCount = -2;
+                        ChessCheat.currTurnCount = 0;
                         break;
                     }
 
                     if (className.includes("black")) {
                         ChessCheat.allyPlayerColor = "b";
-                        ChessCheat.currTurnCount = -1;
+                        ChessCheat.currTurnCount = 1;
                         break;
                     }
                 }
@@ -83,6 +83,7 @@ export default class ChessCheat {
     public static SuggestMove(): void {
         ChessCheat.UpdateChessBoard();
         ChessCheat.UpdateChessBoardSettings();
+        console.log(ChessCheat.ComputeFen());
     }
 
     public static UpdateChessBoard() {
