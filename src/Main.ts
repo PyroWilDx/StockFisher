@@ -1,4 +1,4 @@
-import ChessCom from "./ChessCom";
+import ChessCheat from "./ChessCom";
 
 (() => {
     if (window.location.hostname !== "www.chess.com") {
@@ -7,5 +7,5 @@ import ChessCom from "./ChessCom";
 
     console.log("ChessCheat");
 
-    ChessCom.InitChessCom();
+    ChessCheat.InitChessCheat();
 })();
