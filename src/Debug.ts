@@ -1,4 +1,4 @@
-import ChessCheat from "./ChessCom";
+import ChessCheat from "./ChessCheat";
 
 export default class Debug {
     public static DisplayChessCom(): void {

@@ -1,4 +1,3 @@
-import Debug from "./Debug";
 import StockFish, { StockFishResponse } from "./StockFish";
 
 export default class ChessCheat {
@@ -19,7 +18,6 @@ export default class ChessCheat {
     public static readonly chessBoardId = "board-single";
     public static chessBoard: HTMLElement;
     public static allyClock: HTMLElement;
-    public static oppClock: HTMLElement;
 
     public static InitChessCheat(): void {
         ChessCheat.lastChessBoard = null;
@@ -48,12 +46,10 @@ export default class ChessCheat {
                 ChessCheat.chessBoard = chessBoard;
 
                 const allyClock = document.querySelector<HTMLElement>(".clock-bottom");
-                const oppClock = document.querySelector<HTMLElement>(".clock-top");
-                if (!allyClock || !oppClock) {
+                if (!allyClock) {
                     return;
                 }
                 ChessCheat.allyClock = allyClock;
-                ChessCheat.oppClock = oppClock;
 
                 ChessCheat.WaitForTurn();
             }
@@ -76,7 +72,7 @@ export default class ChessCheat {
 
     public static SuggestMove(): void {
         ChessCheat.UpdateChessBoard();
-        Debug.DisplayChessCom();
+        ChessCheat.UpdateChessBoardSettings();
     }
 
     public static UpdateChessBoard() {
@@ -114,8 +110,75 @@ export default class ChessCheat {
                 }
             }
 
-            ChessCheat.currChessBoard[(8 - 1) - pY][pX] = pName;
+            ChessCheat.currChessBoard[7 - pY][pX] = pName;
         }
+    }
+
+    public static UpdateChessBoardSettings() {
+        if (ChessCheat.lastChessBoard === null || ChessCheat.currChessBoard === null) {
+            return;
+        }
+
+        const lastPlayerTurn = ChessCheat.currPlayerTurn;
+        ChessCheat.currPlayerTurn = lastPlayerTurn !== "w"
+            ? "w"
+            : "b";
+
+        ChessCheat.canEnPassantCoords = "-";
+
+        for (let sqX = 0; sqX < 8; sqX++) {
+            for (let sqY = 0; sqY < 8; sqY++) {
+                const lastPiece = ChessCheat.lastChessBoard[sqY][sqX];
+                const currPiece = ChessCheat.currChessBoard[sqY][sqX];
+                if (lastPiece === currPiece) {
+                    continue;
+                }
+
+                if (lastPiece === 'K') {
+                    ChessCheat.canWhiteCastleK = false;
+                    ChessCheat.canWhiteCastleQ = false;
+                } else if (lastPiece === 'R') {
+                    if (sqY === 7) {
+                        if (sqX === 7) {
+                            ChessCheat.canWhiteCastleK = false;
+                        } else if (sqX === 0) {
+                            ChessCheat.canWhiteCastleQ = false;
+                        }
+                    }
+                } else if (lastPiece === 'k') {
+                    ChessCheat.canBlackCastleK = false;
+                    ChessCheat.canBlackCastleQ = false;
+                } else if (lastPiece === 'r') {
+                    if (sqY === 7) {
+                        if (sqX === 7) {
+                            ChessCheat.canBlackCastleK = false;
+                        } else if (sqX === 0) {
+                            ChessCheat.canBlackCastleQ = false;
+                        }
+                    }
+                }
+
+                if (lastPiece === 'P' && lastPlayerTurn === 'w') {
+                    if (sqY === 6) {
+                        const lastTargetSq = ChessCheat.lastChessBoard[sqY - 2][sqX];
+                        const currTargetSq = ChessCheat.currChessBoard[sqY - 2][sqX];
+                        if (lastTargetSq !== 'P' && currTargetSq === 'P') {
+                            ChessCheat.canEnPassantCoords = ChessCheat.NumCoordsToChessCoords(sqX, sqY - 1);
+                        }
+                    }
+                } else if (lastPiece === 'p' && lastPlayerTurn === 'b') {
+                    if (sqY === 1) {
+                        const lastTargetSq = ChessCheat.lastChessBoard[sqY + 2][sqX];
+                        const currTargetSq = ChessCheat.currChessBoard[sqY + 2][sqX];
+                        if (lastTargetSq !== 'p' && currTargetSq === 'p') {
+                            ChessCheat.canEnPassantCoords = ChessCheat.NumCoordsToChessCoords(sqX, sqY + 1);
+                        }
+                    }
+                }
+            }
+        }
+
+        ChessCheat.currTurnCount++;
     }
 
     public static async RequestStockFish(fen: string, depth: number): Promise<StockFishResponse | null> {
@@ -141,5 +204,9 @@ export default class ChessCheat {
         hlEl.style.backgroundColor = "rgb(235, 97, 80)";
         hlEl.style.opacity = "0.8";
         ChessCheat.chessBoard.insertBefore(hlEl, ChessCheat.chessBoard.childNodes[1]);
+    }
+
+    public static NumCoordsToChessCoords(sqX: number, sqY: number): string {
+        return String.fromCharCode(97 + sqX) + sqY;
     }
 }

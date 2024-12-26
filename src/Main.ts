@@ -1,4 +1,4 @@
-import ChessCheat from "./ChessCom";
+import ChessCheat from "./ChessCheat";
 
 (() => {
     if (window.location.hostname !== "www.chess.com") {
