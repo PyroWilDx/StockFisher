@@ -13,7 +13,8 @@
             "16": "res/imgs/icons/icon16.png",
             "48": "res/imgs/icons/icon48.png",
             "128": "res/imgs/icons/icon128.png"
-        }
+        },
+        "default_popup": "src/Popup.html"
     },
     "permissions": [
         "activeTab",
