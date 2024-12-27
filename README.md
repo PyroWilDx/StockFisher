@@ -1,0 +1,34 @@
+# ChessCheat
+
+[**ChessCheat**](https://github.com/PyroWilDx/ChessCheat/) is a browser extension that provides assistance in finding optimal moves during games on [ChessCom](https://www.chess.com/).
+
+The [StockFish](https://stockfishchess.org/) engine, accessed through the [StockFishOnline](https://www.stockfish.online/) API, is used for game analysis.
+
+## Development Set-Up
+
+<div align="center">
+
+| [<img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/typescript/typescript-original.svg" width="60"/>](https://www.typescriptlang.org/) | [<img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/nodejs/nodejs-original.svg" width="60"/>](https://nodejs.org/) | [<img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/vscode/vscode-original.svg" width="60"/>](https://code.visualstudio.com/) | [<img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/windows8/windows8-original.svg" width="60"/>](https://www.microsoft.com/windows/) |
+|---|---|---|---|
+
+</div>
+
+### How To Use
+
+- Install npm dependencies.
+
+```
+npm install
+```
+
+- Build browser extension.
+
+```
+npm run build
+```
+
+---
+
+<div align="center">
+  Copyright &#169; 2024 PyroWilDx. All Rights Reserved.
+</div>
