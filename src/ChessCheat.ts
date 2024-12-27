@@ -83,7 +83,7 @@ export default class ChessCheat {
                     ChessCheat.WaitForTurn();
 
                     ChessCheat.GameOverObserver();
-                }, 60);
+                }, 100);
             }
         });
 
@@ -117,7 +117,7 @@ export default class ChessCheat {
                 ChessCheat.chessBoard.removeChild(ChessCheat.dstHl);
             }
 
-            setTimeout(ChessCheat.SuggestMove, 60);
+            setTimeout(ChessCheat.SuggestMove, 100);
         });
 
         ChessCheat.turnObserver.observe(ChessCheat.allyClock, { attributes: true });
