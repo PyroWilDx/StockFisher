@@ -163,6 +163,12 @@ export default class ChessCheat {
 
                 console.log("ChessCheat: Best Move \"" + bestMove + "\"");
 
+                const evalStr = stockFishResponse.evaluation !== null
+                    ? stockFishResponse.evaluation.toString()
+                    : "M" + stockFishResponse.mate;
+
+                console.log("ChessCheat: Evaluation \"" + evalStr + "\"");
+
                 const srcSquare = ChessCheat.ChessCoordsToNumCoords(bestMove.substring(0, 2));
                 const dstSquare = ChessCheat.ChessCoordsToNumCoords(bestMove.substring(2, 4));
                 ChessCheat.srcHl = ChessCheat.HighlightSquare(srcSquare.nX + 1, srcSquare.nY + 1);

@@ -4,7 +4,7 @@ export default class StockFish {
 
 export interface StockFishResponse {
     success: boolean;
-    evaluation: number;
+    evaluation: number | null;
     mate: number | null;
     bestmove: string;
     continuation: string;
