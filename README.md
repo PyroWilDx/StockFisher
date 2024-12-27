@@ -24,6 +24,8 @@ npm install
 npm run build
 ```
 
+- To complete installation, enable **Developer Mode** on Chrome extensions page, click on **Load Unpacked**, and select **ChessCheat**.
+
 ---
 
 <div align="center">
