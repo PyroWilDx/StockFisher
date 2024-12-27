@@ -132,7 +132,14 @@ export default class ChessCheat {
                     return;
                 }
 
-                console.log(stockFishResponse);
+                const bestMove = stockFishResponse.bestmove.substring(9, 13);
+
+                console.log("ChessCheat: Best Move \"" + bestMove + "\"");
+
+                const fromSquare = ChessCheat.ChessCoordsToNumCoords(bestMove.substring(0, 2));
+                const toSquare = ChessCheat.ChessCoordsToNumCoords(bestMove.substring(2, 4));
+                ChessCheat.HighlightSquare(fromSquare.nX + 1, fromSquare.nY + 1);
+                ChessCheat.HighlightSquare(toSquare.nX + 1, toSquare.nY + 1);
             })
             .catch((error) => {
                 console.log("ChessCheat: Error Fetching StockFish Response.");
@@ -317,8 +324,15 @@ export default class ChessCheat {
         ChessCheat.chessBoard.insertBefore(hlEl, ChessCheat.chessBoard.childNodes[1]);
     }
 
-    public static NumCoordsToChessCoords(sqX: number, sqY: number): string {
-        return String.fromCharCode(97 + sqX) + sqY;
+    public static NumCoordsToChessCoords(nX: number, nY: number): string {
+        return String.fromCharCode(nX + 97) + nY;
+    }
+
+    public static ChessCoordsToNumCoords(chessCoords: string): { nX: number, nY: number } {
+        return {
+            nX: chessCoords[0].charCodeAt(0) - 97,
+            nY: parseInt(chessCoords[1]) - 1
+        }
     }
 
     public static GameOverObserver(): void {
