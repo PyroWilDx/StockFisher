@@ -17,15 +17,10 @@ https://github.com/user-attachments/assets/9aad15bb-1050-499e-85d1-c6020f0a8f1b
 
 ### How To Use
 
-- Install npm dependencies.
+- Build from source.
 
 ```
 npm install
-```
-
-- Build browser extension.
-
-```
 npm run build
 ```
 
