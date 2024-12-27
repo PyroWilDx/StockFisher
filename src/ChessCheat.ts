@@ -164,11 +164,19 @@ export default class ChessCheat {
 
                 Debug.DisplayLog("ChessCheat: Best Move \"" + bestMove + "\"");
 
-                const evalStr = stockFishResponse.evaluation !== null
-                    ? stockFishResponse.evaluation.toString()
-                    : "M" + stockFishResponse.mate;
+                let evalStr = "";
+                if (stockFishResponse.evaluation !== null) {
+                    evalStr = stockFishResponse.evaluation.toString();
+                }
+                if (stockFishResponse.mate !== null) {
+                    if (stockFishResponse.mate > 0) {
+                        evalStr = "M" + stockFishResponse.mate;
+                    } else {
+                        evalStr = "-M" + (-stockFishResponse.mate);
+                    }
+                }
 
-                    Debug.DisplayLog("ChessCheat: Evaluation \"" + evalStr + "\"");
+                Debug.DisplayLog("ChessCheat: Evaluation \"" + evalStr + "\"");
 
                 const srcSquare = ChessCheat.ChessCoordsToNumCoords(bestMove.substring(0, 2));
                 const dstSquare = ChessCheat.ChessCoordsToNumCoords(bestMove.substring(2, 4));
