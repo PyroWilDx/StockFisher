@@ -21,6 +21,9 @@ export default class ChessCheat {
 
     public static turnObserver: MutationObserver | null = null;
 
+    public static srcHl: HTMLDivElement | null = null;
+    public static dstHl: HTMLDivElement | null = null;
+
     public static InitChessCheat(): void {
         ChessCheat.ResetChessCheat();
 
@@ -109,6 +112,11 @@ export default class ChessCheat {
 
             console.log("ChessCheat: Your Turn Detected.");
 
+            if (ChessCheat.srcHl !== null && ChessCheat.dstHl !== null) {
+                ChessCheat.chessBoard.removeChild(ChessCheat.srcHl);
+                ChessCheat.chessBoard.removeChild(ChessCheat.dstHl);
+            }
+
             setTimeout(ChessCheat.SuggestMove, 60);
         });
 
@@ -136,10 +144,10 @@ export default class ChessCheat {
 
                 console.log("ChessCheat: Best Move \"" + bestMove + "\"");
 
-                const fromSquare = ChessCheat.ChessCoordsToNumCoords(bestMove.substring(0, 2));
-                const toSquare = ChessCheat.ChessCoordsToNumCoords(bestMove.substring(2, 4));
-                ChessCheat.HighlightSquare(fromSquare.nX + 1, fromSquare.nY + 1);
-                ChessCheat.HighlightSquare(toSquare.nX + 1, toSquare.nY + 1);
+                const srcSquare = ChessCheat.ChessCoordsToNumCoords(bestMove.substring(0, 2));
+                const dstSquare = ChessCheat.ChessCoordsToNumCoords(bestMove.substring(2, 4));
+                ChessCheat.srcHl = ChessCheat.HighlightSquare(srcSquare.nX + 1, srcSquare.nY + 1);
+                ChessCheat.dstHl = ChessCheat.HighlightSquare(dstSquare.nX + 1, dstSquare.nY + 1);
             })
             .catch((error) => {
                 console.log("ChessCheat: Error Fetching StockFish Response.");
@@ -315,17 +323,19 @@ export default class ChessCheat {
         return await r.json();
     }
 
-    public static HighlightSquare(sqX: number, sqY: number): void {
+    public static HighlightSquare(sqX: number, sqY: number): HTMLDivElement {
         const hlEl = document.createElement("div");
         hlEl.classList.add("highlight", "square-" + sqX.toString() + sqY.toString());
         hlEl.setAttribute("data-test-element", "highlight");
         hlEl.style.backgroundColor = "rgb(235, 97, 80)";
         hlEl.style.opacity = "0.8";
         ChessCheat.chessBoard.insertBefore(hlEl, ChessCheat.chessBoard.childNodes[1]);
+
+        return hlEl;
     }
 
     public static NumCoordsToChessCoords(nX: number, nY: number): string {
-        return String.fromCharCode(nX + 97) + nY;
+        return String.fromCharCode(nX + 97) + (nY + 1);
     }
 
     public static ChessCoordsToNumCoords(chessCoords: string): { nX: number, nY: number } {
