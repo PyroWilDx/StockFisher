@@ -1,3 +1,4 @@
+import Debug from "./Debug";
 import StockFish, { StockFishResponse } from "./StockFish";
 
 export default class ChessCheat {
@@ -66,7 +67,7 @@ export default class ChessCheat {
         const boardObserver = new MutationObserver(() => {
             const chessBoard = document.getElementById(ChessCheat.chessBoardId);
             if (chessBoard) {
-                console.log("ChessCheat: Chess Board Found.");
+                Debug.DisplayLog("ChessCheat: Chess Board Found.");
 
                 boardObserver.disconnect();
 
@@ -89,7 +90,7 @@ export default class ChessCheat {
         const gameObserver = new MutationObserver(() => {
             const takeOver = document.querySelector<HTMLElement>(".takeover");
             if (takeOver) {
-                console.log("ChessCheat: Game Start Detected.");
+                Debug.DisplayLog("ChessCheat: Game Start Detected.");
 
                 gameObserver.disconnect();
 
@@ -128,7 +129,7 @@ export default class ChessCheat {
                 return;
             }
 
-            console.log("ChessCheat: Your Turn Detected.");
+            Debug.DisplayLog("ChessCheat: Your Turn Detected.");
 
             if (ChessCheat.srcHl !== null && ChessCheat.dstHl !== null) {
                 if (ChessCheat.chessBoard.contains(ChessCheat.srcHl)) {
@@ -151,7 +152,7 @@ export default class ChessCheat {
 
         const fen = ChessCheat.ComputeFen();
 
-        console.log("ChessCheat: FEN \"" + fen + "\"");
+        Debug.DisplayLog("ChessCheat: FEN \"" + fen + "\"");
 
         ChessCheat.RequestStockFish(fen, 10)
             .then((stockFishResponse) => {
@@ -161,13 +162,13 @@ export default class ChessCheat {
 
                 const bestMove = stockFishResponse.bestmove.substring(9, 13);
 
-                console.log("ChessCheat: Best Move \"" + bestMove + "\"");
+                Debug.DisplayLog("ChessCheat: Best Move \"" + bestMove + "\"");
 
                 const evalStr = stockFishResponse.evaluation !== null
                     ? stockFishResponse.evaluation.toString()
                     : "M" + stockFishResponse.mate;
 
-                console.log("ChessCheat: Evaluation \"" + evalStr + "\"");
+                    Debug.DisplayLog("ChessCheat: Evaluation \"" + evalStr + "\"");
 
                 const srcSquare = ChessCheat.ChessCoordsToNumCoords(bestMove.substring(0, 2));
                 const dstSquare = ChessCheat.ChessCoordsToNumCoords(bestMove.substring(2, 4));
@@ -366,7 +367,7 @@ export default class ChessCheat {
         const gameOverObserver = new MutationObserver(() => {
             const gameOverModalContent = document.querySelector<HTMLElement>(".game-over-modal-content");
             if (gameOverModalContent) {
-                console.log("ChessCheat: Game Over Detected.");
+                Debug.DisplayLog("ChessCheat: Game Over Detected.");
 
                 gameOverObserver.disconnect();
 

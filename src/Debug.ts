@@ -1,4 +1,12 @@
 export default class Debug {
+    public static DisplayLog(log: string): void {
+        chrome.storage.sync.get(["showLogs"], (result) => {
+            if (result.showLogs) {
+                console.log(log);
+            }
+        });
+    }
+
     public static DisplayChessBoard(chessBoard: string[][]): void {
         let boardStr = "";
         for (const boardLine of chessBoard) {
