@@ -25,6 +25,8 @@ export default class ChessCheat {
     public static srcHl: HTMLDivElement | null = null;
     public static dstHl: HTMLDivElement | null = null;
 
+    public static evalEl: HTMLDivElement | null = null;
+
     public static InitChessCheat(): void {
         ChessCheat.ResetChessCheat();
 
@@ -99,6 +101,22 @@ export default class ChessCheat {
 
                     ChessCheat.UpdateAllyPlayerColor();
 
+                    const playerBottom = document.querySelector(".player-bottom");
+                    if (playerBottom) {
+                        const userTaglineComponent = playerBottom.querySelector(".user-tagline-component");
+                        if (userTaglineComponent) {
+                            const evalEl = document.createElement("div");
+                            evalEl.classList.add("cc-text-medium");
+                            evalEl.style.color = "red";
+                            evalEl.textContent = " (Eval: 0.0) ";
+                            userTaglineComponent.appendChild(evalEl);
+                            if (ChessCheat.evalEl && userTaglineComponent.contains(ChessCheat.evalEl)) {
+                                userTaglineComponent.removeChild(ChessCheat.evalEl);
+                            }
+                            ChessCheat.evalEl = evalEl;
+                        }
+                    }
+
                     ChessCheat.WaitForTurn();
 
                     ChessCheat.GameOverObserver();
@@ -170,6 +188,10 @@ export default class ChessCheat {
                     }
 
                     const bestMove = stockFishResponse.bestmove.substring(9, 13);
+                    const srcSquare = ChessCheat.ChessCoordsToNumCoords(bestMove.substring(0, 2));
+                    const dstSquare = ChessCheat.ChessCoordsToNumCoords(bestMove.substring(2, 4));
+                    ChessCheat.srcHl = ChessCheat.HighlightSquare(srcSquare.nX + 1, srcSquare.nY + 1);
+                    ChessCheat.dstHl = ChessCheat.HighlightSquare(dstSquare.nX + 1, dstSquare.nY + 1);
 
                     Debug.DisplayLog("ChessCheat: Best Move \"" + bestMove + "\"");
 
@@ -184,13 +206,11 @@ export default class ChessCheat {
                             evalStr = "-M" + (-stockFishResponse.mate);
                         }
                     }
+                    if (ChessCheat.evalEl) {
+                        ChessCheat.evalEl.textContent = " (Eval: " + evalStr + ") ";
+                    }
 
                     Debug.DisplayLog("ChessCheat: Evaluation \"" + evalStr + "\"");
-
-                    const srcSquare = ChessCheat.ChessCoordsToNumCoords(bestMove.substring(0, 2));
-                    const dstSquare = ChessCheat.ChessCoordsToNumCoords(bestMove.substring(2, 4));
-                    ChessCheat.srcHl = ChessCheat.HighlightSquare(srcSquare.nX + 1, srcSquare.nY + 1);
-                    ChessCheat.dstHl = ChessCheat.HighlightSquare(dstSquare.nX + 1, dstSquare.nY + 1);
                 })
                 .catch((error) => {
                     console.log("ChessCheat: Error Fetching StockFish Response.");
@@ -391,6 +411,10 @@ export default class ChessCheat {
 
                 if (ChessCheat.turnObserver) {
                     ChessCheat.turnObserver.disconnect();
+                }
+
+                if (ChessCheat.evalEl) {
+                    ChessCheat.evalEl.textContent = "";
                 }
 
                 ChessCheat.WaitForGame();
