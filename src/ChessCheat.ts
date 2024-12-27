@@ -1,8 +1,8 @@
 import StockFish, { StockFishResponse } from "./StockFish";
 
 export default class ChessCheat {
-    public static lastChessBoard: string[][] | null;
-    public static currChessBoard: string[][] | null;
+    public static lastChessBoard: string[][];
+    public static currChessBoard: string[][];
 
     public static allyPlayerColor: string;
 
@@ -31,8 +31,26 @@ export default class ChessCheat {
     }
 
     public static ResetChessCheat(): void {
-        ChessCheat.lastChessBoard = null;
-        ChessCheat.currChessBoard = null;
+        ChessCheat.lastChessBoard = [
+            ["r", "n", "b", "q", "k", "b", "n", "r"],
+            ["p", "p", "p", "p", "p", "p", "p", "p"],
+            ["", "", "", "", "", "", "", ""],
+            ["", "", "", "", "", "", "", ""],
+            ["", "", "", "", "", "", "", ""],
+            ["", "", "", "", "", "", "", ""],
+            ["P", "P", "P", "P", "P", "P", "P", "P"],
+            ["R", "N", "B", "Q", "K", "B", "N", "R"]
+        ];
+        ChessCheat.currChessBoard = [
+            ["r", "n", "b", "q", "k", "b", "n", "r"],
+            ["p", "p", "p", "p", "p", "p", "p", "p"],
+            ["", "", "", "", "", "", "", ""],
+            ["", "", "", "", "", "", "", ""],
+            ["", "", "", "", "", "", "", ""],
+            ["", "", "", "", "", "", "", ""],
+            ["P", "P", "P", "P", "P", "P", "P", "P"],
+            ["R", "N", "B", "Q", "K", "B", "N", "R"]
+        ];
 
         ChessCheat.canWhiteCastleK = true;
         ChessCheat.canWhiteCastleQ = true;
@@ -113,8 +131,12 @@ export default class ChessCheat {
             console.log("ChessCheat: Your Turn Detected.");
 
             if (ChessCheat.srcHl !== null && ChessCheat.dstHl !== null) {
-                ChessCheat.chessBoard.removeChild(ChessCheat.srcHl);
-                ChessCheat.chessBoard.removeChild(ChessCheat.dstHl);
+                if (ChessCheat.chessBoard.contains(ChessCheat.srcHl)) {
+                    ChessCheat.chessBoard.removeChild(ChessCheat.srcHl);
+                }
+                if (ChessCheat.chessBoard.contains(ChessCheat.dstHl)) {
+                    ChessCheat.chessBoard.removeChild(ChessCheat.dstHl);
+                }
             }
 
             setTimeout(ChessCheat.SuggestMove, 100);
@@ -126,9 +148,6 @@ export default class ChessCheat {
     public static SuggestMove(): void {
         ChessCheat.UpdateChessBoard();
         ChessCheat.UpdateChessBoardSettings();
-
-        // Debug.DisplayChessBoard(ChessCheat.lastChessBoard);
-        // Debug.DisplayChessBoard(ChessCheat.currChessBoard);
 
         const fen = ChessCheat.ComputeFen();
 
@@ -195,10 +214,6 @@ export default class ChessCheat {
     }
 
     public static UpdateChessBoardSettings(): void {
-        if (ChessCheat.lastChessBoard === null || ChessCheat.currChessBoard === null) {
-            return;
-        }
-
         const oppPlayerColor = ChessCheat.allyPlayerColor !== "w"
             ? "w"
             : "b";
@@ -209,7 +224,7 @@ export default class ChessCheat {
             for (let sqY = 0; sqY < 8; sqY++) {
                 const lastPiece = ChessCheat.lastChessBoard[sqY][sqX];
                 const currPiece = ChessCheat.currChessBoard[sqY][sqX];
-                if (lastPiece === currPiece) {
+                if (lastPiece.length === 0 || lastPiece === currPiece) {
                     continue;
                 }
 
@@ -242,7 +257,7 @@ export default class ChessCheat {
                         const lastTargetSq = ChessCheat.lastChessBoard[sqY - 2][sqX];
                         const currTargetSq = ChessCheat.currChessBoard[sqY - 2][sqX];
                         if (lastTargetSq !== 'P' && currTargetSq === 'P') {
-                            ChessCheat.canEnPassantCoords = ChessCheat.NumCoordsToChessCoords(sqX, sqY - 1);
+                            ChessCheat.canEnPassantCoords = ChessCheat.NumCoordsToChessCoords(sqX, 7 - (sqY - 1));
                         }
                     }
                 } else if (lastPiece === 'p' && oppPlayerColor === 'b') {
@@ -250,7 +265,7 @@ export default class ChessCheat {
                         const lastTargetSq = ChessCheat.lastChessBoard[sqY + 2][sqX];
                         const currTargetSq = ChessCheat.currChessBoard[sqY + 2][sqX];
                         if (lastTargetSq !== 'p' && currTargetSq === 'p') {
-                            ChessCheat.canEnPassantCoords = ChessCheat.NumCoordsToChessCoords(sqX, sqY + 1);
+                            ChessCheat.canEnPassantCoords = ChessCheat.NumCoordsToChessCoords(sqX, 7 - (sqY + 1));
                         }
                     }
                 }
@@ -262,10 +277,6 @@ export default class ChessCheat {
 
     public static ComputeFen(): string {
         let fen = "";
-
-        if (ChessCheat.currChessBoard === null) {
-            return fen;
-        }
 
         let currEmptyCount = 0;
         for (const boardLine of ChessCheat.currChessBoard) {

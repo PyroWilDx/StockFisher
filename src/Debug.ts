@@ -1,9 +1,5 @@
 export default class Debug {
-    public static DisplayChessBoard(chessBoard: string[][] | null): void {
-        if (!chessBoard) {
-            return;
-        }
-
+    public static DisplayChessBoard(chessBoard: string[][]): void {
         let boardStr = "";
         for (const boardLine of chessBoard) {
             for (const currPiece of boardLine) {
