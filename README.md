@@ -4,6 +4,8 @@
 
 The [StockFish](https://stockfishchess.org/) engine, accessed through the [StockFishOnline](https://www.stockfish.online/) API, is used for game analysis.
 
+https://github.com/user-attachments/assets/9aad15bb-1050-499e-85d1-c6020f0a8f1b
+
 ## Development Set-Up
 
 <div align="center">
