@@ -4,16 +4,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ChessCheat Popup</title>
+    <title>ChessCheat</title>
     <link rel="stylesheet" href="Popup.css">
 </head>
 
 <body>
-    <div class="content">
-        <h1>ChessCheat</h1>
-        <p>Hello</p>
-        <button id="cheatButton">Activate Cheat</button>
+    <div class="container">
+        <header class="header">
+            <h1 class="title">ChessCheat</h1>
+        </header>
+
+        <div class="switch-container">
+            <span class="switch-text">On/Off</span>
+            <label class="switch">
+                <input id="onOffSwitch" type="checkbox">
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <div class="button-container">
+            <span class="switch-text">Show Logs</span>
+            <label class="switch">
+                <input id="showLogsSwitch" type="checkbox">
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <div class="slider-container">
+            <label class="slider-label" for="depthSlider">Depth = <span id="depthValue">1</span></label>
+            <input id="depthSlider" type="range" min="1" max="15" value="1">
+        </div>
     </div>
+
     <script src="Popup.js"></script>
 </body>
 
