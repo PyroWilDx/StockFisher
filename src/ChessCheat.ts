@@ -234,10 +234,10 @@ export default class ChessCheat {
                     continue;
                 }
 
-                if (lastPiece === 'K') {
+                if (lastPiece === "K") {
                     ChessCheat.canWhiteCastleK = false;
                     ChessCheat.canWhiteCastleQ = false;
-                } else if (lastPiece === 'R') {
+                } else if (lastPiece === "R") {
                     if (sqY === 7) {
                         if (sqX === 7) {
                             ChessCheat.canWhiteCastleK = false;
@@ -245,10 +245,10 @@ export default class ChessCheat {
                             ChessCheat.canWhiteCastleQ = false;
                         }
                     }
-                } else if (lastPiece === 'k') {
+                } else if (lastPiece === "k") {
                     ChessCheat.canBlackCastleK = false;
                     ChessCheat.canBlackCastleQ = false;
-                } else if (lastPiece === 'r') {
+                } else if (lastPiece === "r") {
                     if (sqY === 7) {
                         if (sqX === 7) {
                             ChessCheat.canBlackCastleK = false;
@@ -258,19 +258,19 @@ export default class ChessCheat {
                     }
                 }
 
-                if (lastPiece === 'P' && oppPlayerColor === 'w') {
+                if (lastPiece === "P" && oppPlayerColor === "w") {
                     if (sqY === 6) {
                         const lastTargetSq = ChessCheat.lastChessBoard[sqY - 2][sqX];
                         const currTargetSq = ChessCheat.currChessBoard[sqY - 2][sqX];
-                        if (lastTargetSq !== 'P' && currTargetSq === 'P') {
+                        if (lastTargetSq !== "P" && currTargetSq === "P") {
                             ChessCheat.canEnPassantCoords = ChessCheat.NumCoordsToChessCoords(sqX, 7 - (sqY - 1));
                         }
                     }
-                } else if (lastPiece === 'p' && oppPlayerColor === 'b') {
+                } else if (lastPiece === "p" && oppPlayerColor === "b") {
                     if (sqY === 1) {
                         const lastTargetSq = ChessCheat.lastChessBoard[sqY + 2][sqX];
                         const currTargetSq = ChessCheat.currChessBoard[sqY + 2][sqX];
-                        if (lastTargetSq !== 'p' && currTargetSq === 'p') {
+                        if (lastTargetSq !== "p" && currTargetSq === "p") {
                             ChessCheat.canEnPassantCoords = ChessCheat.NumCoordsToChessCoords(sqX, 7 - (sqY + 1));
                         }
                     }
