@@ -1,9 +1,11 @@
 export default class Debug {
     public static DisplayLog(log: string): void {
-        chrome.storage.sync.get(["showLogs"], (result) => {
-            if (result.showLogs) {
-                console.log(log);
+        chrome.storage.sync.get(["onOff", "showLogs"], (result) => {
+            if (!result.onOff || !result.showLogs) {
+                return;
             }
+
+            console.log(log);
         });
     }
 

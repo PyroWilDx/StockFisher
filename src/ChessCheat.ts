@@ -154,39 +154,49 @@ export default class ChessCheat {
 
         Debug.DisplayLog("ChessCheat: FEN \"" + fen + "\"");
 
-        ChessCheat.RequestStockFish(fen, 10)
-            .then((stockFishResponse) => {
-                if (!stockFishResponse) {
-                    return;
-                }
+        chrome.storage.sync.get(["onOff", "depth"], (result) => {
+            if (!result.onOff) {
+                return;
+            }
 
-                const bestMove = stockFishResponse.bestmove.substring(9, 13);
-
-                Debug.DisplayLog("ChessCheat: Best Move \"" + bestMove + "\"");
-
-                let evalStr = "";
-                if (stockFishResponse.evaluation !== null) {
-                    evalStr = stockFishResponse.evaluation.toString();
-                }
-                if (stockFishResponse.mate !== null) {
-                    if (stockFishResponse.mate > 0) {
-                        evalStr = "M" + stockFishResponse.mate;
-                    } else {
-                        evalStr = "-M" + (-stockFishResponse.mate);
+            let depth = 10;
+            if (result.depth !== undefined) {
+                depth = result.depth;
+            }
+            ChessCheat.RequestStockFish(fen, depth)
+                .then((stockFishResponse) => {
+                    if (!stockFishResponse) {
+                        return;
                     }
-                }
 
-                Debug.DisplayLog("ChessCheat: Evaluation \"" + evalStr + "\"");
+                    const bestMove = stockFishResponse.bestmove.substring(9, 13);
 
-                const srcSquare = ChessCheat.ChessCoordsToNumCoords(bestMove.substring(0, 2));
-                const dstSquare = ChessCheat.ChessCoordsToNumCoords(bestMove.substring(2, 4));
-                ChessCheat.srcHl = ChessCheat.HighlightSquare(srcSquare.nX + 1, srcSquare.nY + 1);
-                ChessCheat.dstHl = ChessCheat.HighlightSquare(dstSquare.nX + 1, dstSquare.nY + 1);
-            })
-            .catch((error) => {
-                console.log("ChessCheat: Error Fetching StockFish Response.");
-                console.log(error);
-            });
+                    Debug.DisplayLog("ChessCheat: Best Move \"" + bestMove + "\"");
+
+                    let evalStr = "";
+                    if (stockFishResponse.evaluation !== null) {
+                        evalStr = stockFishResponse.evaluation.toString();
+                    }
+                    if (stockFishResponse.mate !== null) {
+                        if (stockFishResponse.mate > 0) {
+                            evalStr = "M" + stockFishResponse.mate;
+                        } else {
+                            evalStr = "-M" + (-stockFishResponse.mate);
+                        }
+                    }
+
+                    Debug.DisplayLog("ChessCheat: Evaluation \"" + evalStr + "\"");
+
+                    const srcSquare = ChessCheat.ChessCoordsToNumCoords(bestMove.substring(0, 2));
+                    const dstSquare = ChessCheat.ChessCoordsToNumCoords(bestMove.substring(2, 4));
+                    ChessCheat.srcHl = ChessCheat.HighlightSquare(srcSquare.nX + 1, srcSquare.nY + 1);
+                    ChessCheat.dstHl = ChessCheat.HighlightSquare(dstSquare.nX + 1, dstSquare.nY + 1);
+                })
+                .catch((error) => {
+                    console.log("ChessCheat: Error Fetching StockFish Response.");
+                    console.log(error);
+                });
+        });
     }
 
     public static UpdateChessBoard(): void {
