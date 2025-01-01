@@ -156,6 +156,10 @@ export default class ChessCheat {
             ChessCheat.WaitForOppTurn();
 
             ChessCheat.WaitForGameOver();
+
+            if (ChessCheat.allyClock.classList.contains("clock-player-turn")) {
+                ChessCheat.SuggestMove();
+            }
         }
 
         if (afterTime !== 0) {

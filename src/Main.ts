@@ -22,10 +22,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
         ChessCheat.StartGame(0);
 
-        if (ChessCheat.allyClock.classList.contains("clock-player-turn")) {
-            ChessCheat.SuggestMove();
-        }
-
         sendResponse({ status: "success" });
     }
 });
