@@ -378,7 +378,8 @@ export default class ChessCheat {
         const hlEl = document.createElement("div");
         hlEl.classList.add("highlight", "square-" + sqX.toString() + sqY.toString());
         hlEl.setAttribute("data-test-element", "highlight");
-        hlEl.style.backgroundColor = "rgb(235, 97, 80)";
+        // 235 97 80
+        hlEl.style.backgroundColor = "rgb(0, 255, 255)";
         hlEl.style.opacity = "0.8";
         ChessCheat.chessBoard.insertBefore(hlEl, ChessCheat.chessBoard.childNodes[1]);
 
