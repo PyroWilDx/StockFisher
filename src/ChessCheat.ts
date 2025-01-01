@@ -19,8 +19,10 @@ export default class ChessCheat {
     public static readonly chessBoardId = "board-single";
     public static chessBoard: HTMLElement;
     public static allyClock: HTMLElement;
+    public static oppClock: HTMLElement;
 
-    public static turnObserver: MutationObserver | null = null;
+    public static allyTurnObserver: MutationObserver | null = null;
+    public static oppTurnObserver: MutationObserver | null = null;
 
     public static srcHighlightedSquares: HTMLDivElement[] = [];
     public static dstHighlightedSquares: HTMLDivElement[] = [];
@@ -81,6 +83,12 @@ export default class ChessCheat {
                 }
                 ChessCheat.allyClock = allyClock;
 
+                const oppClock = document.querySelector<HTMLElement>(".clock-top");
+                if (!oppClock) {
+                    return;
+                }
+                ChessCheat.oppClock = oppClock;
+
                 ChessCheat.WaitForGame();
             }
         });
@@ -117,9 +125,10 @@ export default class ChessCheat {
                         }
                     }
 
-                    ChessCheat.WaitForTurn();
+                    ChessCheat.WaitForAllyTurn();
+                    ChessCheat.WaitForOppTurn();
 
-                    ChessCheat.GameOverObserver();
+                    ChessCheat.WaitForGameOver();
                 }, 100);
             }
         });
@@ -141,8 +150,8 @@ export default class ChessCheat {
         }
     }
 
-    public static WaitForTurn(): void {
-        ChessCheat.turnObserver = new MutationObserver(() => {
+    public static WaitForAllyTurn(): void {
+        ChessCheat.allyTurnObserver = new MutationObserver(() => {
             if (!ChessCheat.allyClock.classList.contains("clock-player-turn")) {
                 return;
             }
@@ -154,64 +163,28 @@ export default class ChessCheat {
             setTimeout(ChessCheat.SuggestMove, 100);
         });
 
-        ChessCheat.turnObserver.observe(ChessCheat.allyClock, { attributes: true });
+        ChessCheat.allyTurnObserver.observe(ChessCheat.allyClock, { attributes: true });
+    }
+
+    public static WaitForOppTurn(): void {
+        ChessCheat.oppTurnObserver = new MutationObserver(() => {
+            if (!ChessCheat.oppClock.classList.contains("clock-player-turn")) {
+                return;
+            }
+
+            Debug.DisplayLog("ChessCheat: Opponent Turn Detected.");
+
+            ChessCheat.ClearHighlightedSquares();
+        });
+
+        ChessCheat.oppTurnObserver.observe(ChessCheat.oppClock, { attributes: true });
     }
 
     public static SuggestMove(): void {
         ChessCheat.UpdateChessBoard();
         ChessCheat.UpdateChessBoardSettings();
 
-        const fen = ChessCheat.ComputeFen();
-
-        Debug.DisplayLog("ChessCheat: FEN \"" + fen + "\"");
-
-        chrome.storage.sync.get(["onOff", "depth"], (result) => {
-            if (!result.onOff) {
-                return;
-            }
-
-            let depth = 10;
-            if (result.depth !== undefined) {
-                depth = result.depth;
-            }
-            ChessCheat.RequestStockFish(fen, depth)
-                .then((stockFishResponse) => {
-                    if (!stockFishResponse) {
-                        return;
-                    }
-
-                    const bestMove = stockFishResponse.bestmove.substring(9, 13);
-                    const srcCoords = ChessCheat.ChessCoordsToNumCoords(bestMove.substring(0, 2));
-                    const dstCoords = ChessCheat.ChessCoordsToNumCoords(bestMove.substring(2, 4));
-                    const srcHighlightedSquare = ChessCheat.HighlightSquare(srcCoords.nX + 1, srcCoords.nY + 1);
-                    const dstHighlightedSquare = ChessCheat.HighlightSquare(dstCoords.nX + 1, dstCoords.nY + 1);
-                    ChessCheat.srcHighlightedSquares.push(srcHighlightedSquare);
-                    ChessCheat.dstHighlightedSquares.push(dstHighlightedSquare);
-
-                    Debug.DisplayLog("ChessCheat: Best Move \"" + bestMove + "\"");
-
-                    let evalStr = "";
-                    if (stockFishResponse.evaluation !== null) {
-                        evalStr = stockFishResponse.evaluation.toString();
-                    }
-                    if (stockFishResponse.mate !== null) {
-                        if (stockFishResponse.mate > 0) {
-                            evalStr = "M" + stockFishResponse.mate;
-                        } else {
-                            evalStr = "-M" + (-stockFishResponse.mate);
-                        }
-                    }
-                    if (ChessCheat.evalEl) {
-                        ChessCheat.evalEl.textContent = " (Eval: " + evalStr + ") ";
-                    }
-
-                    Debug.DisplayLog("ChessCheat: Evaluation \"" + evalStr + "\"");
-                })
-                .catch((error) => {
-                    console.log("ChessCheat: Error Fetching StockFish Response.");
-                    console.log(error);
-                });
-        });
+        ChessCheat.FindMove();
     }
 
     public static UpdateChessBoard(): void {
@@ -358,6 +331,64 @@ export default class ChessCheat {
         return fen;
     }
 
+    public static FindMove(): void {
+        chrome.storage.sync.get(["onOff", "depth"], (result) => {
+            if (!result.onOff) {
+                return;
+            }
+
+            const fen = ChessCheat.ComputeFen();
+
+            Debug.DisplayLog("ChessCheat: FEN \"" + fen + "\"");
+
+            let depth = 10;
+            if (result.depth !== undefined) {
+                depth = result.depth;
+            }
+
+            ChessCheat.RequestStockFish(fen, depth)
+                .then((stockFishResponse) => {
+                    if (!stockFishResponse) {
+                        return;
+                    }
+
+                    const bestMove = stockFishResponse.bestmove.substring(9, 13);
+                    const srcCoords = ChessCheat.ChessCoordsToNumCoords(bestMove.substring(0, 2));
+                    const dstCoords = ChessCheat.ChessCoordsToNumCoords(bestMove.substring(2, 4));
+                    const srcHighlightedSquare = ChessCheat.HighlightSquare(srcCoords.nX + 1, srcCoords.nY + 1);
+                    const dstHighlightedSquare = ChessCheat.HighlightSquare(dstCoords.nX + 1, dstCoords.nY + 1);
+                    ChessCheat.srcHighlightedSquares.push(srcHighlightedSquare);
+                    ChessCheat.dstHighlightedSquares.push(dstHighlightedSquare);
+
+                    Debug.DisplayLog("ChessCheat: Best Move \"" + bestMove + "\"");
+
+                    let evalStr = "";
+                    if (stockFishResponse.evaluation !== null) {
+                        if (stockFishResponse.evaluation > 0) {
+                            evalStr += "+";
+                        }
+                        evalStr = stockFishResponse.evaluation.toString();
+                    }
+                    if (stockFishResponse.mate !== null) {
+                        if (stockFishResponse.mate > 0) {
+                            evalStr = "+M" + stockFishResponse.mate;
+                        } else {
+                            evalStr = "-M" + (-stockFishResponse.mate);
+                        }
+                    }
+                    if (ChessCheat.evalEl) {
+                        ChessCheat.evalEl.textContent = " (Eval: " + evalStr + ") ";
+                    }
+
+                    Debug.DisplayLog("ChessCheat: Evaluation \"" + evalStr + "\"");
+                })
+                .catch((error) => {
+                    console.log("ChessCheat: Error Fetching StockFish Response.");
+                    console.log(error);
+                });
+        });
+    }
+
     public static async RequestStockFish(fen: string, depth: number): Promise<StockFishResponse | null> {
         const url = new URL(StockFish.API);
         url.searchParams.append("fen", fen);
@@ -386,7 +417,7 @@ export default class ChessCheat {
         return hlEl;
     }
 
-    public static ClearHighlightedSquares() {
+    public static ClearHighlightedSquares(): void {
         for (const srcHighlightedSquare of ChessCheat.srcHighlightedSquares) {
             if (ChessCheat.chessBoard.contains(srcHighlightedSquare)) {
                 ChessCheat.chessBoard.removeChild(srcHighlightedSquare);
@@ -413,7 +444,7 @@ export default class ChessCheat {
         }
     }
 
-    public static GameOverObserver(): void {
+    public static WaitForGameOver(): void {
         const gameOverObserver = new MutationObserver(() => {
             const gameOverModalContent = document.querySelector<HTMLElement>(".game-over-modal-content");
             if (gameOverModalContent) {
@@ -421,8 +452,13 @@ export default class ChessCheat {
 
                 gameOverObserver.disconnect();
 
-                if (ChessCheat.turnObserver) {
-                    ChessCheat.turnObserver.disconnect();
+                if (ChessCheat.allyTurnObserver) {
+                    ChessCheat.allyTurnObserver.disconnect();
+                    ChessCheat.allyTurnObserver = null;
+                }
+                if (ChessCheat.oppTurnObserver) {
+                    ChessCheat.oppTurnObserver.disconnect();
+                    ChessCheat.oppTurnObserver = null;
                 }
 
                 ChessCheat.ClearHighlightedSquares();
