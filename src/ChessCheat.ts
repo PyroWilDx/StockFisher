@@ -131,7 +131,7 @@ export default class ChessCheat {
             ChessCheat.gameOverObserver = null;
         }
 
-        const afterTimeout = () => {
+        const afterTimeFn = () => {
             ChessCheat.ResetChessCheat();
 
             ChessCheat.UpdateAllyPlayerColor();
@@ -163,9 +163,9 @@ export default class ChessCheat {
         }
 
         if (afterTime !== 0) {
-            setTimeout(afterTimeout, afterTime);
+            setTimeout(afterTimeFn, afterTime);
         } else {
-            afterTimeout();
+            afterTimeFn();
         }
     }
 
