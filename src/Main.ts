@@ -20,11 +20,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
         Debug.DisplayLog("ChessCheat: Forced Game Start.");
 
-        ChessCheat.StartGame();
+        ChessCheat.StartGame(0);
 
         if (ChessCheat.allyClock.classList.contains("clock-player-turn")) {
-            // Not pretty, but it's because StartGame() also has a setTimeout.
-            setTimeout(ChessCheat.SuggestMove, 120);
+            ChessCheat.SuggestMove();
         }
 
         sendResponse({ status: "success" });

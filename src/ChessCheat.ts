@@ -104,14 +104,14 @@ export default class ChessCheat {
         ChessCheat.gameObserver = new MutationObserver(() => {
             const takeOver = document.querySelector<HTMLElement>(".takeover");
             if (takeOver) {
-                ChessCheat.StartGame();
+                ChessCheat.StartGame(100);
             }
         });
 
         ChessCheat.gameObserver.observe(document.body, { childList: true, subtree: true });
     }
 
-    public static StartGame(): void {
+    public static StartGame(afterTime: number): void {
         Debug.DisplayLog("ChessCheat: Game Start.");
 
         if (ChessCheat.gameObserver) {
@@ -131,7 +131,7 @@ export default class ChessCheat {
             ChessCheat.gameOverObserver = null;
         }
 
-        setTimeout(() => {
+        const afterTimeout = () => {
             ChessCheat.ResetChessCheat();
 
             ChessCheat.UpdateAllyPlayerColor();
@@ -156,7 +156,13 @@ export default class ChessCheat {
             ChessCheat.WaitForOppTurn();
 
             ChessCheat.WaitForGameOver();
-        }, 100);
+        }
+
+        if (afterTime !== 0) {
+            setTimeout(afterTimeout, afterTime);
+        } else {
+            afterTimeout();
+        }
     }
 
     public static UpdateAllyPlayerColor(): void {
