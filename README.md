@@ -2,7 +2,7 @@
 
 [**ChessCheat**](https://github.com/PyroWilDx/ChessCheat/) is a browser extension that provides assistance in finding optimal moves during games on [ChessCom](https://www.chess.com/).
 
-The [StockFish](https://stockfishchess.org/) engine, accessed through the [StockFishOnline](https://www.stockfish.online/) API, is used for game analysis.
+The [StockFish](https://stockfishchess.org/) engine, accessed through the [StockFishOnline API](https://www.stockfish.online/), is used for game analysis.
 
 https://github.com/user-attachments/assets/9aad15bb-1050-499e-85d1-c6020f0a8f1b
 
@@ -38,5 +38,5 @@ npm run build
 ---
 
 <div align="center">
-  Copyright &#169; 2024 PyroWilDx. All Rights Reserved.
+  Copyright &#169; 2025 PyroWilDx. All Rights Reserved.
 </div>
