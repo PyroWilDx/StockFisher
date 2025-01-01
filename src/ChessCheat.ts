@@ -6,6 +6,7 @@ export default class ChessCheat {
     public static currChessBoard: string[][];
 
     public static allyPlayerColor: string;
+    public static oppPlayerColor: string;
 
     public static canWhiteCastleK: boolean;
     public static canWhiteCastleQ: boolean;
@@ -157,8 +158,8 @@ export default class ChessCheat {
 
             ChessCheat.WaitForGameOver();
 
-            if (ChessCheat.allyClock.classList.contains("clock-player-turn")) {
-                ChessCheat.SuggestMove();
+            if (ChessCheat.IsClockTurn(ChessCheat.allyClock)) {
+                ChessCheat.SuggestMove(ChessCheat.allyPlayerColor);
             }
         }
 
@@ -173,11 +174,13 @@ export default class ChessCheat {
         for (const className of ChessCheat.allyClock.classList) {
             if (className.includes("white")) {
                 ChessCheat.allyPlayerColor = "w";
+                ChessCheat.oppPlayerColor = "b";
                 break;
             }
 
             if (className.includes("black")) {
                 ChessCheat.allyPlayerColor = "b";
+                ChessCheat.oppPlayerColor = "w";
                 break;
             }
         }
@@ -185,7 +188,7 @@ export default class ChessCheat {
 
     public static WaitForAllyTurn(): void {
         ChessCheat.allyTurnObserver = new MutationObserver(() => {
-            if (!ChessCheat.allyClock.classList.contains("clock-player-turn")) {
+            if (!ChessCheat.IsClockTurn(ChessCheat.allyClock)) {
                 return;
             }
 
@@ -193,7 +196,9 @@ export default class ChessCheat {
 
             ChessCheat.ClearHighlightedSquares();
 
-            setTimeout(ChessCheat.SuggestMove, 100);
+            setTimeout(() => {
+                ChessCheat.SuggestMove(ChessCheat.allyPlayerColor);
+            }, 100);
         });
 
         ChessCheat.allyTurnObserver.observe(ChessCheat.allyClock, { attributes: true });
@@ -201,23 +206,31 @@ export default class ChessCheat {
 
     public static WaitForOppTurn(): void {
         ChessCheat.oppTurnObserver = new MutationObserver(() => {
-            if (!ChessCheat.oppClock.classList.contains("clock-player-turn")) {
+            if (!ChessCheat.IsClockTurn(ChessCheat.oppClock)) {
                 return;
             }
 
             Debug.DisplayLog("ChessCheat: Opponent Turn Detected.");
 
             ChessCheat.ClearHighlightedSquares();
+
+            setTimeout(() => {
+                ChessCheat.SuggestMove(ChessCheat.oppPlayerColor);
+            }, 100);
         });
 
         ChessCheat.oppTurnObserver.observe(ChessCheat.oppClock, { attributes: true });
     }
 
-    public static SuggestMove(): void {
+    public static IsClockTurn(pClock: HTMLElement): boolean {
+        return pClock.classList.contains("clock-player-turn");
+    }
+
+    public static SuggestMove(playerColor: string): void {
         ChessCheat.UpdateChessBoard();
         ChessCheat.UpdateChessBoardSettings();
 
-        ChessCheat.FindMove();
+        ChessCheat.FindMove(playerColor);
     }
 
     public static UpdateChessBoard(): void {
@@ -260,10 +273,6 @@ export default class ChessCheat {
     }
 
     public static UpdateChessBoardSettings(): void {
-        const oppPlayerColor = ChessCheat.allyPlayerColor !== "w"
-            ? "w"
-            : "b";
-
         ChessCheat.canEnPassantCoords = "-";
 
         for (let sqX = 0; sqX < 8; sqX++) {
@@ -298,7 +307,7 @@ export default class ChessCheat {
                     }
                 }
 
-                if (lastPiece === "P" && oppPlayerColor === "w") {
+                if (lastPiece === "P" && ChessCheat.oppPlayerColor === "w") {
                     if (sqY === 6) {
                         const lastTargetSq = ChessCheat.lastChessBoard[sqY - 2][sqX];
                         const currTargetSq = ChessCheat.currChessBoard[sqY - 2][sqX];
@@ -306,7 +315,7 @@ export default class ChessCheat {
                             ChessCheat.canEnPassantCoords = ChessCheat.NumCoordsToChessCoords(sqX, 7 - (sqY - 1));
                         }
                     }
-                } else if (lastPiece === "p" && oppPlayerColor === "b") {
+                } else if (lastPiece === "p" && ChessCheat.oppPlayerColor === "b") {
                     if (sqY === 1) {
                         const lastTargetSq = ChessCheat.lastChessBoard[sqY + 2][sqX];
                         const currTargetSq = ChessCheat.currChessBoard[sqY + 2][sqX];
@@ -321,7 +330,7 @@ export default class ChessCheat {
         ChessCheat.currTurnCount++;
     }
 
-    public static ComputeFEN(): string {
+    public static ComputeFEN(playerColor: string): string {
         let fen = "";
 
         let currEmptyCount = 0;
@@ -347,7 +356,7 @@ export default class ChessCheat {
         }
 
         fen = fen.substring(0, fen.length - 1);
-        fen += " " + ChessCheat.allyPlayerColor;
+        fen += " " + playerColor;
         fen += " ";
         if (!ChessCheat.canWhiteCastleK && !ChessCheat.canWhiteCastleQ && !ChessCheat.canBlackCastleK && !ChessCheat.canBlackCastleQ) {
             fen += "-";
@@ -364,13 +373,13 @@ export default class ChessCheat {
         return fen;
     }
 
-    public static FindMove(): void {
+    public static FindMove(playerColor: string): void {
         chrome.storage.sync.get(["onOff", "depth"], (result) => {
             if (!result.onOff) {
                 return;
             }
 
-            const fen = ChessCheat.ComputeFEN();
+            const fen = ChessCheat.ComputeFEN(playerColor);
 
             Debug.DisplayLog("ChessCheat: FEN \"" + fen + "\"");
 
@@ -386,12 +395,14 @@ export default class ChessCheat {
                     }
 
                     const bestMove = stockFishResponse.bestmove.substring(9, 13);
-                    const srcCoords = ChessCheat.ChessCoordsToNumCoords(bestMove.substring(0, 2));
-                    const dstCoords = ChessCheat.ChessCoordsToNumCoords(bestMove.substring(2, 4));
-                    const srcHighlightedSquare = ChessCheat.HighlightSquare(srcCoords.nX + 1, srcCoords.nY + 1);
-                    const dstHighlightedSquare = ChessCheat.HighlightSquare(dstCoords.nX + 1, dstCoords.nY + 1);
-                    ChessCheat.srcHighlightedSquares.push(srcHighlightedSquare);
-                    ChessCheat.dstHighlightedSquares.push(dstHighlightedSquare);
+                    if (playerColor === ChessCheat.allyPlayerColor) {
+                        const srcCoords = ChessCheat.ChessCoordsToNumCoords(bestMove.substring(0, 2));
+                        const dstCoords = ChessCheat.ChessCoordsToNumCoords(bestMove.substring(2, 4));
+                        const srcHighlightedSquare = ChessCheat.HighlightSquare(srcCoords.nX + 1, srcCoords.nY + 1);
+                        const dstHighlightedSquare = ChessCheat.HighlightSquare(dstCoords.nX + 1, dstCoords.nY + 1);
+                        ChessCheat.srcHighlightedSquares.push(srcHighlightedSquare);
+                        ChessCheat.dstHighlightedSquares.push(dstHighlightedSquare);
+                    }
 
                     Debug.DisplayLog("ChessCheat: Best Move \"" + bestMove + "\"");
 
