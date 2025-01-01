@@ -21,6 +21,8 @@ export default class ChessCheat {
     public static allyClock: HTMLElement;
     public static oppClock: HTMLElement;
 
+    public static gameObserver: MutationObserver | null = null;
+
     public static allyTurnObserver: MutationObserver | null = null;
     public static oppTurnObserver: MutationObserver | null = null;
 
@@ -28,6 +30,8 @@ export default class ChessCheat {
     public static dstHighlightedSquares: HTMLDivElement[] = [];
 
     public static evalEl: HTMLDivElement | null = null;
+
+    public static gameOverObserver: MutationObserver | null = null;
 
     public static InitChessCheat(): void {
         ChessCheat.ResetChessCheat();
@@ -97,43 +101,62 @@ export default class ChessCheat {
     }
 
     public static WaitForGame(): void {
-        const gameObserver = new MutationObserver(() => {
+        ChessCheat.gameObserver = new MutationObserver(() => {
             const takeOver = document.querySelector<HTMLElement>(".takeover");
             if (takeOver) {
-                Debug.DisplayLog("ChessCheat: Game Start Detected.");
-
-                gameObserver.disconnect();
-
-                setTimeout(() => {
-                    ChessCheat.ResetChessCheat();
-
-                    ChessCheat.UpdateAllyPlayerColor();
-
-                    const playerBottom = document.querySelector(".player-bottom");
-                    if (playerBottom) {
-                        const userTaglineComponent = playerBottom.querySelector(".user-tagline-component");
-                        if (userTaglineComponent) {
-                            const evalEl = document.createElement("div");
-                            evalEl.classList.add("cc-text-medium");
-                            evalEl.style.color = "red";
-                            evalEl.textContent = " (Eval: 0.0) ";
-                            userTaglineComponent.appendChild(evalEl);
-                            if (ChessCheat.evalEl && userTaglineComponent.contains(ChessCheat.evalEl)) {
-                                userTaglineComponent.removeChild(ChessCheat.evalEl);
-                            }
-                            ChessCheat.evalEl = evalEl;
-                        }
-                    }
-
-                    ChessCheat.WaitForAllyTurn();
-                    ChessCheat.WaitForOppTurn();
-
-                    ChessCheat.WaitForGameOver();
-                }, 100);
+                ChessCheat.StartGame();
             }
         });
 
-        gameObserver.observe(document.body, { childList: true, subtree: true });
+        ChessCheat.gameObserver.observe(document.body, { childList: true, subtree: true });
+    }
+
+    public static StartGame(): void {
+        Debug.DisplayLog("ChessCheat: Game Start.");
+
+        if (ChessCheat.gameObserver) {
+            ChessCheat.gameObserver.disconnect();
+            ChessCheat.gameObserver = null;
+        }
+        if (ChessCheat.allyTurnObserver) {
+            ChessCheat.allyTurnObserver.disconnect();
+            ChessCheat.allyTurnObserver = null;
+        }
+        if (ChessCheat.oppTurnObserver) {
+            ChessCheat.oppTurnObserver.disconnect();
+            ChessCheat.oppTurnObserver = null;
+        }
+        if (ChessCheat.gameOverObserver) {
+            ChessCheat.gameOverObserver.disconnect();
+            ChessCheat.gameOverObserver = null;
+        }
+
+        setTimeout(() => {
+            ChessCheat.ResetChessCheat();
+
+            ChessCheat.UpdateAllyPlayerColor();
+
+            const playerBottom = document.querySelector(".player-bottom");
+            if (playerBottom) {
+                const userTaglineComponent = playerBottom.querySelector(".user-tagline-component");
+                if (userTaglineComponent) {
+                    const evalEl = document.createElement("div");
+                    evalEl.classList.add("cc-text-medium");
+                    evalEl.style.color = "red";
+                    evalEl.textContent = " (Eval: 0.00) ";
+                    userTaglineComponent.appendChild(evalEl);
+                    if (ChessCheat.evalEl && userTaglineComponent.contains(ChessCheat.evalEl)) {
+                        userTaglineComponent.removeChild(ChessCheat.evalEl);
+                    }
+                    ChessCheat.evalEl = evalEl;
+                }
+            }
+
+            ChessCheat.WaitForAllyTurn();
+            ChessCheat.WaitForOppTurn();
+
+            ChessCheat.WaitForGameOver();
+        }, 100);
     }
 
     public static UpdateAllyPlayerColor(): void {
@@ -288,7 +311,7 @@ export default class ChessCheat {
         ChessCheat.currTurnCount++;
     }
 
-    public static ComputeFen(): string {
+    public static ComputeFEN(): string {
         let fen = "";
 
         let currEmptyCount = 0;
@@ -337,7 +360,7 @@ export default class ChessCheat {
                 return;
             }
 
-            const fen = ChessCheat.ComputeFen();
+            const fen = ChessCheat.ComputeFEN();
 
             Debug.DisplayLog("ChessCheat: FEN \"" + fen + "\"");
 
@@ -445,12 +468,15 @@ export default class ChessCheat {
     }
 
     public static WaitForGameOver(): void {
-        const gameOverObserver = new MutationObserver(() => {
+        ChessCheat.gameOverObserver = new MutationObserver(() => {
             const gameOverModalContent = document.querySelector<HTMLElement>(".game-over-modal-content");
             if (gameOverModalContent) {
                 Debug.DisplayLog("ChessCheat: Game Over Detected.");
 
-                gameOverObserver.disconnect();
+                if (ChessCheat.gameOverObserver) {
+                    ChessCheat.gameOverObserver.disconnect();
+                    ChessCheat.gameOverObserver = null;
+                }
 
                 if (ChessCheat.allyTurnObserver) {
                     ChessCheat.allyTurnObserver.disconnect();
@@ -471,6 +497,6 @@ export default class ChessCheat {
             }
         });
 
-        gameOverObserver.observe(document.body, { childList: true, subtree: true });
+        ChessCheat.gameOverObserver.observe(document.body, { childList: true, subtree: true });
     }
 }

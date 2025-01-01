@@ -3,6 +3,7 @@
     const showLogsSwitch = document.getElementById("showLogsSwitch");
     const depthValue = document.getElementById("depthValue");
     const depthSlider = document.getElementById("depthSlider");
+    const forceStartButton = document.getElementById("forceStartButton");
 
     chrome.storage.sync.get(["onOff", "showLogs", "depth"], (result) => {
         if (result.onOff !== undefined) {
@@ -43,6 +44,14 @@
 
     depthSlider.addEventListener("change", () => {
         StoreDepthData(depthSlider.value);
+    });
+
+    forceStartButton.addEventListener("click", () => {
+        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+            if (tabs.length > 0) {
+                chrome.tabs.sendMessage(tabs[0].id, { action: "ForceStartGame" });
+            }
+        })
     });
 })();
 
