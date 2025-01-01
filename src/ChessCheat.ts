@@ -22,8 +22,8 @@ export default class ChessCheat {
 
     public static turnObserver: MutationObserver | null = null;
 
-    public static srcHl: HTMLDivElement | null = null;
-    public static dstHl: HTMLDivElement | null = null;
+    public static srcHighlightedSquares: HTMLDivElement[] = [];
+    public static dstHighlightedSquares: HTMLDivElement[] = [];
 
     public static evalEl: HTMLDivElement | null = null;
 
@@ -149,14 +149,7 @@ export default class ChessCheat {
 
             Debug.DisplayLog("ChessCheat: Your Turn Detected.");
 
-            if (ChessCheat.srcHl !== null && ChessCheat.dstHl !== null) {
-                if (ChessCheat.chessBoard.contains(ChessCheat.srcHl)) {
-                    ChessCheat.chessBoard.removeChild(ChessCheat.srcHl);
-                }
-                if (ChessCheat.chessBoard.contains(ChessCheat.dstHl)) {
-                    ChessCheat.chessBoard.removeChild(ChessCheat.dstHl);
-                }
-            }
+            ChessCheat.ClearHighlightedSquares();
 
             setTimeout(ChessCheat.SuggestMove, 100);
         });
@@ -188,10 +181,12 @@ export default class ChessCheat {
                     }
 
                     const bestMove = stockFishResponse.bestmove.substring(9, 13);
-                    const srcSquare = ChessCheat.ChessCoordsToNumCoords(bestMove.substring(0, 2));
-                    const dstSquare = ChessCheat.ChessCoordsToNumCoords(bestMove.substring(2, 4));
-                    ChessCheat.srcHl = ChessCheat.HighlightSquare(srcSquare.nX + 1, srcSquare.nY + 1);
-                    ChessCheat.dstHl = ChessCheat.HighlightSquare(dstSquare.nX + 1, dstSquare.nY + 1);
+                    const srcCoords = ChessCheat.ChessCoordsToNumCoords(bestMove.substring(0, 2));
+                    const dstCoords = ChessCheat.ChessCoordsToNumCoords(bestMove.substring(2, 4));
+                    const srcHighlightedSquare = ChessCheat.HighlightSquare(srcCoords.nX + 1, srcCoords.nY + 1);
+                    const dstHighlightedSquare = ChessCheat.HighlightSquare(dstCoords.nX + 1, dstCoords.nY + 1);
+                    ChessCheat.srcHighlightedSquares.push(srcHighlightedSquare);
+                    ChessCheat.dstHighlightedSquares.push(dstHighlightedSquare);
 
                     Debug.DisplayLog("ChessCheat: Best Move \"" + bestMove + "\"");
 
@@ -390,6 +385,22 @@ export default class ChessCheat {
         return hlEl;
     }
 
+    public static ClearHighlightedSquares() {
+        for (const srcHighlightedSquare of ChessCheat.srcHighlightedSquares) {
+            if (ChessCheat.chessBoard.contains(srcHighlightedSquare)) {
+                ChessCheat.chessBoard.removeChild(srcHighlightedSquare);
+            }
+        }
+        ChessCheat.srcHighlightedSquares = [];
+
+        for (const dstHighlightedSquare of ChessCheat.dstHighlightedSquares) {
+            if (ChessCheat.chessBoard.contains(dstHighlightedSquare)) {
+                ChessCheat.chessBoard.removeChild(dstHighlightedSquare);
+            }
+        }
+        ChessCheat.dstHighlightedSquares = [];
+    }
+
     public static NumCoordsToChessCoords(nX: number, nY: number): string {
         return String.fromCharCode(nX + 97) + (nY + 1);
     }
@@ -412,6 +423,8 @@ export default class ChessCheat {
                 if (ChessCheat.turnObserver) {
                     ChessCheat.turnObserver.disconnect();
                 }
+
+                ChessCheat.ClearHighlightedSquares();
 
                 if (ChessCheat.evalEl) {
                     ChessCheat.evalEl.textContent = "";
