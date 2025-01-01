@@ -49,7 +49,10 @@
     forceStartButton.addEventListener("click", () => {
         chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
             if (tabs.length > 0) {
-                chrome.tabs.sendMessage(tabs[0].id, { action: "ForceStartGame" });
+                const url = tabs[0].url;
+                if (url.includes("https://www.chess.com/")) {
+                    chrome.tabs.sendMessage(tabs[0].id, { action: "ForceStartGame" });
+                }
             }
         })
     });
