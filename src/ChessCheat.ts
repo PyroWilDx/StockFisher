@@ -145,11 +145,17 @@ export default class ChessCheat {
                     evalEl.classList.add("cc-text-medium");
                     evalEl.style.color = "red";
                     evalEl.textContent = " (Eval: 0.00) ";
-                    userTaglineComponent.appendChild(evalEl);
+
                     if (ChessCheat.evalEl && userTaglineComponent.contains(ChessCheat.evalEl)) {
                         userTaglineComponent.removeChild(ChessCheat.evalEl);
                     }
                     ChessCheat.evalEl = evalEl;
+
+                    chrome.storage.sync.get(["showEval"], (result) => {
+                        if (result.showEval) {
+                            userTaglineComponent.appendChild(evalEl);
+                        }
+                    });
                 }
             }
 
@@ -374,11 +380,7 @@ export default class ChessCheat {
     }
 
     public static FindMove(playerColor: string): void {
-        chrome.storage.sync.get(["onOff", "depth"], (result) => {
-            if (!result.onOff) {
-                return;
-            }
-
+        chrome.storage.sync.get(["highlightMove", "depth"], (result) => {
             const fen = ChessCheat.ComputeFEN(playerColor);
 
             Debug.DisplayLog("ChessCheat: FEN \"" + fen + "\"");
@@ -398,8 +400,8 @@ export default class ChessCheat {
                     if (playerColor === ChessCheat.allyPlayerColor) {
                         const srcCoords = ChessCheat.ChessCoordsToNumCoords(bestMove.substring(0, 2));
                         const dstCoords = ChessCheat.ChessCoordsToNumCoords(bestMove.substring(2, 4));
-                        const srcHighlightedSquare = ChessCheat.HighlightSquare(srcCoords.nX + 1, srcCoords.nY + 1);
-                        const dstHighlightedSquare = ChessCheat.HighlightSquare(dstCoords.nX + 1, dstCoords.nY + 1);
+                        const srcHighlightedSquare = ChessCheat.HighlightSquare(srcCoords.nX + 1, srcCoords.nY + 1, result.highlightMove);
+                        const dstHighlightedSquare = ChessCheat.HighlightSquare(dstCoords.nX + 1, dstCoords.nY + 1, result.highlightMove);
                         ChessCheat.srcHighlightedSquares.push(srcHighlightedSquare);
                         ChessCheat.dstHighlightedSquares.push(dstHighlightedSquare);
                     }
@@ -449,32 +451,67 @@ export default class ChessCheat {
         return await r.json();
     }
 
-    public static HighlightSquare(sqX: number, sqY: number): HTMLDivElement {
+    public static HighlightSquare(sqX: number, sqY: number, highlightMove: boolean): HTMLDivElement {
         const hlEl = document.createElement("div");
         hlEl.classList.add("highlight", "square-" + sqX.toString() + sqY.toString());
         hlEl.setAttribute("data-test-element", "highlight");
         // 235 97 80
         hlEl.style.backgroundColor = "rgb(0, 255, 255)";
         hlEl.style.opacity = "0.8";
-        ChessCheat.chessBoard.insertBefore(hlEl, ChessCheat.chessBoard.childNodes[1]);
+
+        if (highlightMove) {
+            ChessCheat.chessBoard.insertBefore(hlEl, ChessCheat.chessBoard.childNodes[1]);
+        }
 
         return hlEl;
     }
 
-    public static ClearHighlightedSquares(): void {
+
+    public static ShowHighlightedSquares(): void {
+        for (const srcHighlightedSquare of ChessCheat.srcHighlightedSquares) {
+            if (!ChessCheat.chessBoard.contains(srcHighlightedSquare)) {
+                ChessCheat.chessBoard.insertBefore(srcHighlightedSquare, ChessCheat.chessBoard.childNodes[1]);
+            }
+        }
+
+        for (const dstHighlightedSquare of ChessCheat.dstHighlightedSquares) {
+            if (!ChessCheat.chessBoard.contains(dstHighlightedSquare)) {
+                ChessCheat.chessBoard.insertBefore(dstHighlightedSquare, ChessCheat.chessBoard.childNodes[1]);
+            }
+        }
+    }
+
+    public static HideHighlightedSquares(): void {
         for (const srcHighlightedSquare of ChessCheat.srcHighlightedSquares) {
             if (ChessCheat.chessBoard.contains(srcHighlightedSquare)) {
                 ChessCheat.chessBoard.removeChild(srcHighlightedSquare);
             }
         }
-        ChessCheat.srcHighlightedSquares = [];
 
         for (const dstHighlightedSquare of ChessCheat.dstHighlightedSquares) {
             if (ChessCheat.chessBoard.contains(dstHighlightedSquare)) {
                 ChessCheat.chessBoard.removeChild(dstHighlightedSquare);
             }
         }
+    }
+
+    public static ClearHighlightedSquares(): void {
+        ChessCheat.HideHighlightedSquares();
+
+        ChessCheat.srcHighlightedSquares = [];
         ChessCheat.dstHighlightedSquares = [];
+    }
+
+    public static ShowEvalElement(): void {
+        if (ChessCheat.evalEl) {
+            ChessCheat.evalEl.style.visibility = "visible";
+        }
+    }
+
+    public static HideEvalElement(): void {
+        if (ChessCheat.evalEl) {
+            ChessCheat.evalEl.style.visibility = "hidden";
+        }
     }
 
     public static NumCoordsToChessCoords(nX: number, nY: number): string {
@@ -509,10 +546,7 @@ export default class ChessCheat {
                 }
 
                 ChessCheat.ClearHighlightedSquares();
-
-                if (ChessCheat.evalEl) {
-                    ChessCheat.evalEl.textContent = "";
-                }
+                ChessCheat.HideEvalElement();
 
                 ChessCheat.WaitForGame();
             }

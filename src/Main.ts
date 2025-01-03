@@ -12,6 +12,16 @@ import Debug from "./Debug";
 })();
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message.action === "HighlightMove") {
+        if (message.value) ChessCheat.ShowHighlightedSquares();
+        else ChessCheat.HideHighlightedSquares();
+    }
+
+    if (message.action === "ShowEval") {
+        if (message.value) ChessCheat.ShowEvalElement();
+        else ChessCheat.HideEvalElement();
+    }
+
     if (message.action === "ForceStartGame") {
         if (!ChessCheat.chessBoard) {
             alert("ChessCheat couldn't be started because chess board was not found.");

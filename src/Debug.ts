@@ -1,7 +1,7 @@
 export default class Debug {
     public static DisplayLog(log: string): void {
-        chrome.storage.sync.get(["onOff", "showLogs"], (result) => {
-            if (!result.onOff || !result.showLogs) {
+        chrome.storage.sync.get(["showLogs"], (result) => {
+            if (!result.showLogs) {
                 return;
             }
 
