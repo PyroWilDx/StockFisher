@@ -69,7 +69,7 @@ export default class ChessCheat {
 
         ChessCheat.canEnPassantCoords = "-";
 
-        ChessCheat.currTurnCount = 0;
+        ChessCheat.currTurnCount = -1;
     }
 
     public static WaitForBoard(): void {
