@@ -1,4 +1,6 @@
 (() => {
+    const cComURL = "https://www.chess.com/";
+
     const highlightMoveSwitch = document.getElementById("highlightMoveSwitch");
     const showEvalSwitch = document.getElementById("showEvalSwitch");
     const showLogsSwitch = document.getElementById("showLogsSwitch");
@@ -49,8 +51,8 @@
         chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
             if (tabs.length > 0) {
                 const url = tabs[0].url;
-                if (url.includes("https://www.chess.com/")) {
-                    chrome.tabs.sendMessage(tabs[0].id, { action: "HighlightMove", value: showEvalSwitch.checked });
+                if (url.includes(cComURL)) {
+                    chrome.tabs.sendMessage(tabs[0].id, { action: "HighlightMove", value: highlightMoveSwitch.checked });
                 }
             }
         });
@@ -62,7 +64,7 @@
         chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
             if (tabs.length > 0) {
                 const url = tabs[0].url;
-                if (url.includes("https://www.chess.com/")) {
+                if (url.includes(cComURL)) {
                     chrome.tabs.sendMessage(tabs[0].id, { action: "ShowEval", value: showEvalSwitch.checked });
                 }
             }
@@ -85,7 +87,7 @@
         chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
             if (tabs.length > 0) {
                 const url = tabs[0].url;
-                if (url.includes("https://www.chess.com/")) {
+                if (url.includes(cComURL)) {
                     chrome.tabs.sendMessage(tabs[0].id, { action: "ForceStartGame" });
                 }
             }
