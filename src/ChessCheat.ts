@@ -234,7 +234,7 @@ export default class ChessCheat {
 
     public static SuggestMove(playerColor: string): void {
         ChessCheat.UpdateChessBoard();
-        ChessCheat.UpdateChessBoardSettings();
+        ChessCheat.UpdateChessBoardSettings(playerColor);
 
         ChessCheat.FindMove(playerColor);
     }
@@ -278,7 +278,7 @@ export default class ChessCheat {
         }
     }
 
-    public static UpdateChessBoardSettings(): void {
+    public static UpdateChessBoardSettings(playerColor: string): void {
         ChessCheat.canEnPassantCoords = "-";
 
         for (let sqX = 0; sqX < 8; sqX++) {
@@ -333,7 +333,9 @@ export default class ChessCheat {
             }
         }
 
-        ChessCheat.currTurnCount++;
+        if (playerColor === "w") {
+            ChessCheat.currTurnCount++;
+        }
     }
 
     public static ComputeFEN(playerColor: string): string {

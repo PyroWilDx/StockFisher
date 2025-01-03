@@ -28,6 +28,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             return;
         }
 
+        if (!ChessCheat.gameObserver) {
+            alert("It seems like ChessCheat is already started.");
+        }
+
         Debug.DisplayLog("ChessCheat: Forced Game Start.");
 
         ChessCheat.StartGame(0);
