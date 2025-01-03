@@ -1,8 +1,6 @@
 # ChessCheat
 
-[**ChessCheat**](https://github.com/PyroWilDx/ChessCheat/) is a browser extension that provides assistance in finding optimal moves during games on [ChessCom](https://www.chess.com/).
-
-The [StockFishOnline API](https://www.stockfish.online/) is used for game analysis.
+[**ChessCheat**](https://github.com/PyroWilDx/ChessCheat/) is a browser extension that provides assistance in finding optimal moves during games on [ChessCom](https://www.chess.com/). The [StockFishOnline API](https://www.stockfish.online/) is used for game analysis.
 
 https://github.com/user-attachments/assets/9aad15bb-1050-499e-85d1-c6020f0a8f1b
 
