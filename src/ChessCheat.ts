@@ -414,10 +414,14 @@ export default class ChessCheat {
 
                     let evalStr = "";
                     if (stockFishResponse.evaluation !== null) {
-                        if (stockFishResponse.evaluation > 0) {
-                            evalStr += "+";
+                        if (stockFishResponse.evaluation !== 0) {
+                            if (stockFishResponse.evaluation > 0) {
+                                evalStr += "+";
+                            }
+                            evalStr += stockFishResponse.evaluation.toString();
+                        } else {
+                            evalStr = "0.00";
                         }
-                        evalStr = stockFishResponse.evaluation.toString();
                     }
                     if (stockFishResponse.mate !== null) {
                         if (stockFishResponse.mate > 0) {
