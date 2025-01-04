@@ -166,6 +166,8 @@ export default class ChessCheat {
 
             if (ChessCheat.IsClockTurn(ChessCheat.allyClock)) {
                 ChessCheat.SuggestMove(ChessCheat.allyPlayerColor);
+            } else {
+                ChessCheat.SuggestMove(ChessCheat.oppPlayerColor);
             }
         }
 
