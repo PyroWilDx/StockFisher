@@ -1,6 +1,6 @@
 body {
-    background-color: #F4F4F4;
-    color: #303030;
+    background-color: #141E24;
+    color: #FFFFFF;
     font-family: Arial, sans-serif;
     font-size: 14px;
     margin: 0;
@@ -25,6 +25,7 @@ body {
     font-size: 18px;
     font-weight: bold;
     margin: 0;
+    color: #E96C4C;
 }
 
 .switch-container,
@@ -38,6 +39,7 @@ body {
 .switch-text {
     font-size: 14px;
     font-weight: bold;
+    color: #FFFFFF;
 }
 
 .switch {
@@ -54,7 +56,7 @@ body {
 }
 
 .slider {
-    background-color: #CCC;
+    background-color: #40484D;
     border-radius: 20px;
     bottom: 0;
     cursor: pointer;
@@ -78,7 +80,7 @@ body {
 }
 
 input:checked+.slider {
-    background-color: #2196F3;
+    background-color: #E96C4C;
 }
 
 input:checked+.slider:before {
@@ -96,6 +98,7 @@ input:checked+.slider:before {
     font-size: 14px;
     font-weight: bold;
     margin-bottom: -6px;
+    color: #FFFFFF;
 }
 
 #depthSlider {
@@ -103,7 +106,7 @@ input:checked+.slider:before {
 }
 
 .styled-button {
-    background-color: #2196F3;
+    background-color: #E96C4C;
     border: none;
     border-radius: 6px;
     color: white;
@@ -116,9 +119,9 @@ input:checked+.slider:before {
 }
 
 .styled-button:hover {
-    background-color: #1769AA;
+    background-color: #CC5940;
 }
 
 .styled-button:active {
-    background-color: #0E4780;
+    background-color: #B04537;
 }
