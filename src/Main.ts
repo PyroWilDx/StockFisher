@@ -1,40 +1,40 @@
-import ChessCheat from "./ChessCheat";
 import Debug from "./Debug";
+import StockFisher from "./StockFisher";
 
 (() => {
     if (window.location.hostname !== "www.chess.com") {
         return;
     }
 
-    Debug.DisplayLog("ChessCheat: Activated.");
+    Debug.DisplayLog("StockFisher: Activated.");
 
-    ChessCheat.InitChessCheat();
+    StockFisher.InitStockFisher();
 })();
 
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((message, _, sendResponse) => {
     if (message.action === "HighlightMove") {
-        if (message.value) ChessCheat.ShowHighlightedSquares();
-        else ChessCheat.HideHighlightedSquares();
+        if (message.value) StockFisher.ShowHighlightedSquares();
+        else StockFisher.HideHighlightedSquares();
     }
 
     if (message.action === "ShowEval") {
-        if (message.value) ChessCheat.ShowEvalElement();
-        else ChessCheat.HideEvalElement();
+        if (message.value) StockFisher.ShowEvalElement();
+        else StockFisher.HideEvalElement();
     }
 
     if (message.action === "ForceStartGame") {
-        if (!ChessCheat.chessBoard) {
-            alert("ChessCheat couldn't be started because chess board was not found.");
+        if (!StockFisher.chessBoard) {
+            alert("StockFisher couldn't be started because chess board was not found.");
             return;
         }
 
-        if (!ChessCheat.gameObserver) {
-            alert("It seems like ChessCheat is already started.");
+        if (!StockFisher.gameObserver) {
+            alert("It seems like StockFisher is already started.");
         }
 
-        Debug.DisplayLog("ChessCheat: Forced Game Start.");
+        Debug.DisplayLog("StockFisher: Forced Game Start.");
 
-        ChessCheat.StartGame(0);
+        StockFisher.StartGame(0);
 
         sendResponse({ status: "success" });
     }

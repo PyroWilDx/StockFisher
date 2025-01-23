@@ -1,7 +1,7 @@
 import Debug from "./Debug";
 import StockFish, { StockFishResponse } from "./StockFish";
 
-export default class ChessCheat {
+export default class StockFisher {
     public static lastChessBoard: string[][];
     public static currChessBoard: string[][];
 
@@ -34,14 +34,14 @@ export default class ChessCheat {
 
     public static gameOverObserver: MutationObserver | null = null;
 
-    public static InitChessCheat(): void {
-        ChessCheat.ResetChessCheat();
+    public static InitStockFisher(): void {
+        StockFisher.ResetStockFisher();
 
-        ChessCheat.WaitForBoard();
+        StockFisher.WaitForBoard();
     }
 
-    public static ResetChessCheat(): void {
-        ChessCheat.lastChessBoard = [
+    public static ResetStockFisher(): void {
+        StockFisher.lastChessBoard = [
             ["r", "n", "b", "q", "k", "b", "n", "r"],
             ["p", "p", "p", "p", "p", "p", "p", "p"],
             ["", "", "", "", "", "", "", ""],
@@ -51,7 +51,7 @@ export default class ChessCheat {
             ["P", "P", "P", "P", "P", "P", "P", "P"],
             ["R", "N", "B", "Q", "K", "B", "N", "R"]
         ];
-        ChessCheat.currChessBoard = [
+        StockFisher.currChessBoard = [
             ["r", "n", "b", "q", "k", "b", "n", "r"],
             ["p", "p", "p", "p", "p", "p", "p", "p"],
             ["", "", "", "", "", "", "", ""],
@@ -62,39 +62,39 @@ export default class ChessCheat {
             ["R", "N", "B", "Q", "K", "B", "N", "R"]
         ];
 
-        ChessCheat.canWhiteCastleK = true;
-        ChessCheat.canWhiteCastleQ = true;
-        ChessCheat.canBlackCastleK = true;
-        ChessCheat.canBlackCastleQ = true;
+        StockFisher.canWhiteCastleK = true;
+        StockFisher.canWhiteCastleQ = true;
+        StockFisher.canBlackCastleK = true;
+        StockFisher.canBlackCastleQ = true;
 
-        ChessCheat.canEnPassantCoords = "-";
+        StockFisher.canEnPassantCoords = "-";
 
-        ChessCheat.currTurnCount = -1;
+        StockFisher.currTurnCount = -1;
     }
 
     public static WaitForBoard(): void {
         const boardObserver = new MutationObserver(() => {
-            const chessBoard = document.getElementById(ChessCheat.chessBoardId);
+            const chessBoard = document.getElementById(StockFisher.chessBoardId);
             if (chessBoard) {
-                Debug.DisplayLog("ChessCheat: Chess Board Found.");
+                Debug.DisplayLog("StockFisher: Chess Board Found.");
 
                 boardObserver.disconnect();
 
-                ChessCheat.chessBoard = chessBoard;
+                StockFisher.chessBoard = chessBoard;
 
                 const allyClock = document.querySelector<HTMLElement>(".clock-bottom");
                 if (!allyClock) {
                     return;
                 }
-                ChessCheat.allyClock = allyClock;
+                StockFisher.allyClock = allyClock;
 
                 const oppClock = document.querySelector<HTMLElement>(".clock-top");
                 if (!oppClock) {
                     return;
                 }
-                ChessCheat.oppClock = oppClock;
+                StockFisher.oppClock = oppClock;
 
-                ChessCheat.WaitForGame();
+                StockFisher.WaitForGame();
             }
         });
 
@@ -102,40 +102,40 @@ export default class ChessCheat {
     }
 
     public static WaitForGame(): void {
-        ChessCheat.gameObserver = new MutationObserver(() => {
+        StockFisher.gameObserver = new MutationObserver(() => {
             const takeOver = document.querySelector<HTMLElement>(".takeover");
             if (takeOver) {
-                ChessCheat.StartGame(100);
+                StockFisher.StartGame(100);
             }
         });
 
-        ChessCheat.gameObserver.observe(document.body, { childList: true, subtree: true });
+        StockFisher.gameObserver.observe(document.body, { childList: true, subtree: true });
     }
 
     public static StartGame(afterTime: number): void {
-        Debug.DisplayLog("ChessCheat: Game Start.");
+        Debug.DisplayLog("StockFisher: Game Start.");
 
-        if (ChessCheat.gameObserver) {
-            ChessCheat.gameObserver.disconnect();
-            ChessCheat.gameObserver = null;
+        if (StockFisher.gameObserver) {
+            StockFisher.gameObserver.disconnect();
+            StockFisher.gameObserver = null;
         }
-        if (ChessCheat.allyTurnObserver) {
-            ChessCheat.allyTurnObserver.disconnect();
-            ChessCheat.allyTurnObserver = null;
+        if (StockFisher.allyTurnObserver) {
+            StockFisher.allyTurnObserver.disconnect();
+            StockFisher.allyTurnObserver = null;
         }
-        if (ChessCheat.oppTurnObserver) {
-            ChessCheat.oppTurnObserver.disconnect();
-            ChessCheat.oppTurnObserver = null;
+        if (StockFisher.oppTurnObserver) {
+            StockFisher.oppTurnObserver.disconnect();
+            StockFisher.oppTurnObserver = null;
         }
-        if (ChessCheat.gameOverObserver) {
-            ChessCheat.gameOverObserver.disconnect();
-            ChessCheat.gameOverObserver = null;
+        if (StockFisher.gameOverObserver) {
+            StockFisher.gameOverObserver.disconnect();
+            StockFisher.gameOverObserver = null;
         }
 
         const afterTimeFn = () => {
-            ChessCheat.ResetChessCheat();
+            StockFisher.ResetStockFisher();
 
-            ChessCheat.UpdateAllyPlayerColor();
+            StockFisher.UpdateAllyPlayerColor();
 
             const playerBottom = document.querySelector(".player-bottom");
             if (playerBottom) {
@@ -146,10 +146,10 @@ export default class ChessCheat {
                     evalEl.style.color = "red";
                     evalEl.textContent = " (Eval: 0.00) ";
 
-                    if (ChessCheat.evalEl && userTaglineComponent.contains(ChessCheat.evalEl)) {
-                        userTaglineComponent.removeChild(ChessCheat.evalEl);
+                    if (StockFisher.evalEl && userTaglineComponent.contains(StockFisher.evalEl)) {
+                        userTaglineComponent.removeChild(StockFisher.evalEl);
                     }
-                    ChessCheat.evalEl = evalEl;
+                    StockFisher.evalEl = evalEl;
 
                     chrome.storage.sync.get(["showEval"], (result) => {
                         if (result.showEval) {
@@ -159,15 +159,15 @@ export default class ChessCheat {
                 }
             }
 
-            ChessCheat.WaitForAllyTurn();
-            ChessCheat.WaitForOppTurn();
+            StockFisher.WaitForAllyTurn();
+            StockFisher.WaitForOppTurn();
 
-            ChessCheat.WaitForGameOver();
+            StockFisher.WaitForGameOver();
 
-            if (ChessCheat.IsClockTurn(ChessCheat.allyClock)) {
-                ChessCheat.SuggestMove(ChessCheat.allyPlayerColor);
+            if (StockFisher.IsClockTurn(StockFisher.allyClock)) {
+                StockFisher.SuggestMove(StockFisher.allyPlayerColor);
             } else {
-                ChessCheat.SuggestMove(ChessCheat.oppPlayerColor);
+                StockFisher.SuggestMove(StockFisher.oppPlayerColor);
             }
         }
 
@@ -179,55 +179,55 @@ export default class ChessCheat {
     }
 
     public static UpdateAllyPlayerColor(): void {
-        for (const className of ChessCheat.allyClock.classList) {
+        for (const className of StockFisher.allyClock.classList) {
             if (className.includes("white")) {
-                ChessCheat.allyPlayerColor = "w";
-                ChessCheat.oppPlayerColor = "b";
+                StockFisher.allyPlayerColor = "w";
+                StockFisher.oppPlayerColor = "b";
                 break;
             }
 
             if (className.includes("black")) {
-                ChessCheat.allyPlayerColor = "b";
-                ChessCheat.oppPlayerColor = "w";
+                StockFisher.allyPlayerColor = "b";
+                StockFisher.oppPlayerColor = "w";
                 break;
             }
         }
     }
 
     public static WaitForAllyTurn(): void {
-        ChessCheat.allyTurnObserver = new MutationObserver(() => {
-            if (!ChessCheat.IsClockTurn(ChessCheat.allyClock)) {
+        StockFisher.allyTurnObserver = new MutationObserver(() => {
+            if (!StockFisher.IsClockTurn(StockFisher.allyClock)) {
                 return;
             }
 
-            Debug.DisplayLog("ChessCheat: Your Turn Detected.");
+            Debug.DisplayLog("StockFisher: Your Turn Detected.");
 
-            ChessCheat.ClearHighlightedSquares();
+            StockFisher.ClearHighlightedSquares();
 
             setTimeout(() => {
-                ChessCheat.SuggestMove(ChessCheat.allyPlayerColor);
+                StockFisher.SuggestMove(StockFisher.allyPlayerColor);
             }, 100);
         });
 
-        ChessCheat.allyTurnObserver.observe(ChessCheat.allyClock, { attributes: true });
+        StockFisher.allyTurnObserver.observe(StockFisher.allyClock, { attributes: true });
     }
 
     public static WaitForOppTurn(): void {
-        ChessCheat.oppTurnObserver = new MutationObserver(() => {
-            if (!ChessCheat.IsClockTurn(ChessCheat.oppClock)) {
+        StockFisher.oppTurnObserver = new MutationObserver(() => {
+            if (!StockFisher.IsClockTurn(StockFisher.oppClock)) {
                 return;
             }
 
-            Debug.DisplayLog("ChessCheat: Opponent Turn Detected.");
+            Debug.DisplayLog("StockFisher: Opponent Turn Detected.");
 
-            ChessCheat.ClearHighlightedSquares();
+            StockFisher.ClearHighlightedSquares();
 
             setTimeout(() => {
-                ChessCheat.SuggestMove(ChessCheat.oppPlayerColor);
+                StockFisher.SuggestMove(StockFisher.oppPlayerColor);
             }, 100);
         });
 
-        ChessCheat.oppTurnObserver.observe(ChessCheat.oppClock, { attributes: true });
+        StockFisher.oppTurnObserver.observe(StockFisher.oppClock, { attributes: true });
     }
 
     public static IsClockTurn(pClock: HTMLElement): boolean {
@@ -235,16 +235,16 @@ export default class ChessCheat {
     }
 
     public static SuggestMove(playerColor: string): void {
-        ChessCheat.UpdateChessBoard();
-        ChessCheat.UpdateChessBoardSettings(playerColor);
+        StockFisher.UpdateChessBoard();
+        StockFisher.UpdateChessBoardSettings(playerColor);
 
-        ChessCheat.FindMove(playerColor);
+        StockFisher.FindMove(playerColor);
     }
 
     public static UpdateChessBoard(): void {
-        ChessCheat.lastChessBoard = ChessCheat.currChessBoard;
+        StockFisher.lastChessBoard = StockFisher.currChessBoard;
 
-        ChessCheat.currChessBoard = [
+        StockFisher.currChessBoard = [
             ["", "", "", "", "", "", "", ""],
             ["", "", "", "", "", "", "", ""],
             ["", "", "", "", "", "", "", ""],
@@ -255,7 +255,7 @@ export default class ChessCheat {
             ["", "", "", "", "", "", "", ""]
         ];
 
-        const allPieces = ChessCheat.chessBoard.querySelectorAll(".piece");
+        const allPieces = StockFisher.chessBoard.querySelectorAll(".piece");
         for (const currPiece of allPieces) {
             let pName = "";
             let pX = 0;
@@ -276,59 +276,59 @@ export default class ChessCheat {
                 }
             }
 
-            ChessCheat.currChessBoard[7 - pY][pX] = pName;
+            StockFisher.currChessBoard[7 - pY][pX] = pName;
         }
     }
 
     public static UpdateChessBoardSettings(playerColor: string): void {
-        ChessCheat.canEnPassantCoords = "-";
+        StockFisher.canEnPassantCoords = "-";
 
         for (let sqX = 0; sqX < 8; sqX++) {
             for (let sqY = 0; sqY < 8; sqY++) {
-                const lastPiece = ChessCheat.lastChessBoard[sqY][sqX];
-                const currPiece = ChessCheat.currChessBoard[sqY][sqX];
+                const lastPiece = StockFisher.lastChessBoard[sqY][sqX];
+                const currPiece = StockFisher.currChessBoard[sqY][sqX];
                 if (lastPiece.length === 0 || lastPiece === currPiece) {
                     continue;
                 }
 
                 if (lastPiece === "K") {
-                    ChessCheat.canWhiteCastleK = false;
-                    ChessCheat.canWhiteCastleQ = false;
+                    StockFisher.canWhiteCastleK = false;
+                    StockFisher.canWhiteCastleQ = false;
                 } else if (lastPiece === "R") {
                     if (sqY === 7) {
                         if (sqX === 7) {
-                            ChessCheat.canWhiteCastleK = false;
+                            StockFisher.canWhiteCastleK = false;
                         } else if (sqX === 0) {
-                            ChessCheat.canWhiteCastleQ = false;
+                            StockFisher.canWhiteCastleQ = false;
                         }
                     }
                 } else if (lastPiece === "k") {
-                    ChessCheat.canBlackCastleK = false;
-                    ChessCheat.canBlackCastleQ = false;
+                    StockFisher.canBlackCastleK = false;
+                    StockFisher.canBlackCastleQ = false;
                 } else if (lastPiece === "r") {
                     if (sqY === 7) {
                         if (sqX === 7) {
-                            ChessCheat.canBlackCastleK = false;
+                            StockFisher.canBlackCastleK = false;
                         } else if (sqX === 0) {
-                            ChessCheat.canBlackCastleQ = false;
+                            StockFisher.canBlackCastleQ = false;
                         }
                     }
                 }
 
-                if (lastPiece === "P" && ChessCheat.oppPlayerColor === "w") {
+                if (lastPiece === "P" && StockFisher.oppPlayerColor === "w") {
                     if (sqY === 6) {
-                        const lastTargetSq = ChessCheat.lastChessBoard[sqY - 2][sqX];
-                        const currTargetSq = ChessCheat.currChessBoard[sqY - 2][sqX];
+                        const lastTargetSq = StockFisher.lastChessBoard[sqY - 2][sqX];
+                        const currTargetSq = StockFisher.currChessBoard[sqY - 2][sqX];
                         if (lastTargetSq !== "P" && currTargetSq === "P") {
-                            ChessCheat.canEnPassantCoords = ChessCheat.NumCoordsToChessCoords(sqX, 7 - (sqY - 1));
+                            StockFisher.canEnPassantCoords = StockFisher.NumCoordsToChessCoords(sqX, 7 - (sqY - 1));
                         }
                     }
-                } else if (lastPiece === "p" && ChessCheat.oppPlayerColor === "b") {
+                } else if (lastPiece === "p" && StockFisher.oppPlayerColor === "b") {
                     if (sqY === 1) {
-                        const lastTargetSq = ChessCheat.lastChessBoard[sqY + 2][sqX];
-                        const currTargetSq = ChessCheat.currChessBoard[sqY + 2][sqX];
+                        const lastTargetSq = StockFisher.lastChessBoard[sqY + 2][sqX];
+                        const currTargetSq = StockFisher.currChessBoard[sqY + 2][sqX];
                         if (lastTargetSq !== "p" && currTargetSq === "p") {
-                            ChessCheat.canEnPassantCoords = ChessCheat.NumCoordsToChessCoords(sqX, 7 - (sqY + 1));
+                            StockFisher.canEnPassantCoords = StockFisher.NumCoordsToChessCoords(sqX, 7 - (sqY + 1));
                         }
                     }
                 }
@@ -336,7 +336,7 @@ export default class ChessCheat {
         }
 
         if (playerColor === "w") {
-            ChessCheat.currTurnCount++;
+            StockFisher.currTurnCount++;
         }
     }
 
@@ -344,7 +344,7 @@ export default class ChessCheat {
         let fen = "";
 
         let currEmptyCount = 0;
-        for (const boardLine of ChessCheat.currChessBoard) {
+        for (const boardLine of StockFisher.currChessBoard) {
             for (const currPiece of boardLine) {
                 if (currPiece.length === 0) {
                     currEmptyCount++;
@@ -368,49 +368,49 @@ export default class ChessCheat {
         fen = fen.substring(0, fen.length - 1);
         fen += " " + playerColor;
         fen += " ";
-        if (!ChessCheat.canWhiteCastleK && !ChessCheat.canWhiteCastleQ && !ChessCheat.canBlackCastleK && !ChessCheat.canBlackCastleQ) {
+        if (!StockFisher.canWhiteCastleK && !StockFisher.canWhiteCastleQ && !StockFisher.canBlackCastleK && !StockFisher.canBlackCastleQ) {
             fen += "-";
         } else {
-            if (ChessCheat.canWhiteCastleK) fen += "K";
-            if (ChessCheat.canWhiteCastleQ) fen += "Q";
-            if (ChessCheat.canBlackCastleK) fen += "k";
-            if (ChessCheat.canBlackCastleQ) fen += "q";
+            if (StockFisher.canWhiteCastleK) fen += "K";
+            if (StockFisher.canWhiteCastleQ) fen += "Q";
+            if (StockFisher.canBlackCastleK) fen += "k";
+            if (StockFisher.canBlackCastleQ) fen += "q";
         }
-        fen += " " + ChessCheat.canEnPassantCoords;
+        fen += " " + StockFisher.canEnPassantCoords;
         fen += " " + "0";
-        fen += " " + ChessCheat.currTurnCount;
+        fen += " " + StockFisher.currTurnCount;
 
         return fen;
     }
 
     public static FindMove(playerColor: string): void {
         chrome.storage.sync.get(["highlightMove", "depth"], (result) => {
-            const fen = ChessCheat.ComputeFEN(playerColor);
+            const fen = StockFisher.ComputeFEN(playerColor);
 
-            Debug.DisplayLog("ChessCheat: FEN \"" + fen + "\"");
+            Debug.DisplayLog("StockFisher: FEN \"" + fen + "\"");
 
             let depth = 10;
             if (result.depth !== undefined) {
                 depth = result.depth;
             }
 
-            ChessCheat.RequestStockFish(fen, depth)
+            StockFisher.RequestStockFish(fen, depth)
                 .then((stockFishResponse) => {
                     if (!stockFishResponse) {
                         return;
                     }
 
                     const bestMove = stockFishResponse.bestmove.substring(9, 13);
-                    if (playerColor === ChessCheat.allyPlayerColor) {
-                        const srcCoords = ChessCheat.ChessCoordsToNumCoords(bestMove.substring(0, 2));
-                        const dstCoords = ChessCheat.ChessCoordsToNumCoords(bestMove.substring(2, 4));
-                        const srcHighlightedSquare = ChessCheat.HighlightSquare(srcCoords.nX + 1, srcCoords.nY + 1, result.highlightMove);
-                        const dstHighlightedSquare = ChessCheat.HighlightSquare(dstCoords.nX + 1, dstCoords.nY + 1, result.highlightMove);
-                        ChessCheat.srcHighlightedSquares.push(srcHighlightedSquare);
-                        ChessCheat.dstHighlightedSquares.push(dstHighlightedSquare);
+                    if (playerColor === StockFisher.allyPlayerColor) {
+                        const srcCoords = StockFisher.ChessCoordsToNumCoords(bestMove.substring(0, 2));
+                        const dstCoords = StockFisher.ChessCoordsToNumCoords(bestMove.substring(2, 4));
+                        const srcHighlightedSquare = StockFisher.HighlightSquare(srcCoords.nX + 1, srcCoords.nY + 1, result.highlightMove);
+                        const dstHighlightedSquare = StockFisher.HighlightSquare(dstCoords.nX + 1, dstCoords.nY + 1, result.highlightMove);
+                        StockFisher.srcHighlightedSquares.push(srcHighlightedSquare);
+                        StockFisher.dstHighlightedSquares.push(dstHighlightedSquare);
                     }
 
-                    Debug.DisplayLog("ChessCheat: Best Move \"" + bestMove + "\"");
+                    Debug.DisplayLog("StockFisher: Best Move \"" + bestMove + "\"");
 
                     let evalStr = "";
                     if (stockFishResponse.evaluation !== null) {
@@ -430,14 +430,14 @@ export default class ChessCheat {
                             evalStr = "-M" + (-stockFishResponse.mate);
                         }
                     }
-                    if (ChessCheat.evalEl) {
-                        ChessCheat.evalEl.textContent = " (Eval: " + evalStr + ") ";
+                    if (StockFisher.evalEl) {
+                        StockFisher.evalEl.textContent = " (Eval: " + evalStr + ") ";
                     }
 
-                    Debug.DisplayLog("ChessCheat: Evaluation \"" + evalStr + "\"");
+                    Debug.DisplayLog("StockFisher: Evaluation \"" + evalStr + "\"");
                 })
                 .catch((error) => {
-                    console.log("ChessCheat: Error Fetching StockFish Response.");
+                    console.log("StockFisher: Error Fetching StockFish Response.");
                     console.log(error);
                 });
         });
@@ -468,7 +468,7 @@ export default class ChessCheat {
         hlEl.style.opacity = "0.8";
 
         if (highlightMove) {
-            ChessCheat.chessBoard.insertBefore(hlEl, ChessCheat.chessBoard.childNodes[1]);
+            StockFisher.chessBoard.insertBefore(hlEl, StockFisher.chessBoard.childNodes[1]);
         }
 
         return hlEl;
@@ -476,49 +476,49 @@ export default class ChessCheat {
 
 
     public static ShowHighlightedSquares(): void {
-        for (const srcHighlightedSquare of ChessCheat.srcHighlightedSquares) {
-            if (!ChessCheat.chessBoard.contains(srcHighlightedSquare)) {
-                ChessCheat.chessBoard.insertBefore(srcHighlightedSquare, ChessCheat.chessBoard.childNodes[1]);
+        for (const srcHighlightedSquare of StockFisher.srcHighlightedSquares) {
+            if (!StockFisher.chessBoard.contains(srcHighlightedSquare)) {
+                StockFisher.chessBoard.insertBefore(srcHighlightedSquare, StockFisher.chessBoard.childNodes[1]);
             }
         }
 
-        for (const dstHighlightedSquare of ChessCheat.dstHighlightedSquares) {
-            if (!ChessCheat.chessBoard.contains(dstHighlightedSquare)) {
-                ChessCheat.chessBoard.insertBefore(dstHighlightedSquare, ChessCheat.chessBoard.childNodes[1]);
+        for (const dstHighlightedSquare of StockFisher.dstHighlightedSquares) {
+            if (!StockFisher.chessBoard.contains(dstHighlightedSquare)) {
+                StockFisher.chessBoard.insertBefore(dstHighlightedSquare, StockFisher.chessBoard.childNodes[1]);
             }
         }
     }
 
     public static HideHighlightedSquares(): void {
-        for (const srcHighlightedSquare of ChessCheat.srcHighlightedSquares) {
-            if (ChessCheat.chessBoard.contains(srcHighlightedSquare)) {
-                ChessCheat.chessBoard.removeChild(srcHighlightedSquare);
+        for (const srcHighlightedSquare of StockFisher.srcHighlightedSquares) {
+            if (StockFisher.chessBoard.contains(srcHighlightedSquare)) {
+                StockFisher.chessBoard.removeChild(srcHighlightedSquare);
             }
         }
 
-        for (const dstHighlightedSquare of ChessCheat.dstHighlightedSquares) {
-            if (ChessCheat.chessBoard.contains(dstHighlightedSquare)) {
-                ChessCheat.chessBoard.removeChild(dstHighlightedSquare);
+        for (const dstHighlightedSquare of StockFisher.dstHighlightedSquares) {
+            if (StockFisher.chessBoard.contains(dstHighlightedSquare)) {
+                StockFisher.chessBoard.removeChild(dstHighlightedSquare);
             }
         }
     }
 
     public static ClearHighlightedSquares(): void {
-        ChessCheat.HideHighlightedSquares();
+        StockFisher.HideHighlightedSquares();
 
-        ChessCheat.srcHighlightedSquares = [];
-        ChessCheat.dstHighlightedSquares = [];
+        StockFisher.srcHighlightedSquares = [];
+        StockFisher.dstHighlightedSquares = [];
     }
 
     public static ShowEvalElement(): void {
-        if (ChessCheat.evalEl) {
-            ChessCheat.evalEl.style.visibility = "visible";
+        if (StockFisher.evalEl) {
+            StockFisher.evalEl.style.visibility = "visible";
         }
     }
 
     public static HideEvalElement(): void {
-        if (ChessCheat.evalEl) {
-            ChessCheat.evalEl.style.visibility = "hidden";
+        if (StockFisher.evalEl) {
+            StockFisher.evalEl.style.visibility = "hidden";
         }
     }
 
@@ -534,32 +534,32 @@ export default class ChessCheat {
     }
 
     public static WaitForGameOver(): void {
-        ChessCheat.gameOverObserver = new MutationObserver(() => {
+        StockFisher.gameOverObserver = new MutationObserver(() => {
             const gameOverModalContent = document.querySelector<HTMLElement>(".game-over-modal-content");
             if (gameOverModalContent) {
-                Debug.DisplayLog("ChessCheat: Game Over Detected.");
+                Debug.DisplayLog("StockFisher: Game Over Detected.");
 
-                if (ChessCheat.gameOverObserver) {
-                    ChessCheat.gameOverObserver.disconnect();
-                    ChessCheat.gameOverObserver = null;
+                if (StockFisher.gameOverObserver) {
+                    StockFisher.gameOverObserver.disconnect();
+                    StockFisher.gameOverObserver = null;
                 }
 
-                if (ChessCheat.allyTurnObserver) {
-                    ChessCheat.allyTurnObserver.disconnect();
-                    ChessCheat.allyTurnObserver = null;
+                if (StockFisher.allyTurnObserver) {
+                    StockFisher.allyTurnObserver.disconnect();
+                    StockFisher.allyTurnObserver = null;
                 }
-                if (ChessCheat.oppTurnObserver) {
-                    ChessCheat.oppTurnObserver.disconnect();
-                    ChessCheat.oppTurnObserver = null;
+                if (StockFisher.oppTurnObserver) {
+                    StockFisher.oppTurnObserver.disconnect();
+                    StockFisher.oppTurnObserver = null;
                 }
 
-                ChessCheat.ClearHighlightedSquares();
-                ChessCheat.HideEvalElement();
+                StockFisher.ClearHighlightedSquares();
+                StockFisher.HideEvalElement();
 
-                ChessCheat.WaitForGame();
+                StockFisher.WaitForGame();
             }
         });
 
-        ChessCheat.gameOverObserver.observe(document.body, { childList: true, subtree: true });
+        StockFisher.gameOverObserver.observe(document.body, { childList: true, subtree: true });
     }
 }
