@@ -4,15 +4,6 @@
 
 https://github.com/user-attachments/assets/9aad15bb-1050-499e-85d1-c6020f0a8f1b
 
-## Download
-
-<div align="center">
-
-| [<img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/chrome/chrome-original.svg" width="60"/>](https://www.mediafire.com/file/s99vxz4gr8nva71/ChessCheat.crx/) |
-|---|
-
-</div>
-
 ## Development Set-Up
 
 <div align="center">
