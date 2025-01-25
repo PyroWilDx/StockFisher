@@ -4,7 +4,7 @@
 
 The [StockFishOnline API](https://www.stockfish.online/) is used for game analysis.
 
-https://github.com/user-attachments/assets/9aad15bb-1050-499e-85d1-c6020f0a8f1b
+https://github.com/user-attachments/assets/1017426b-e697-42db-92d5-c67772011e98
 
 ## Development Set-Up
 
@@ -17,14 +17,19 @@ https://github.com/user-attachments/assets/9aad15bb-1050-499e-85d1-c6020f0a8f1b
 
 ### How To Use
 
-- Build from source.
+- Install npm dependencies.
 
 ```
 npm install
+```
+
+- Build from source.
+
+```
 npm run build
 ```
 
-- To complete installation, enable **Developer Mode** on Chrome extensions page, click on **Load Unpacked**, and select **StockFisher**.
+- On Chrome extensions tab, enable **Developer Mode**. Then, drag/drop **StockFisher**.
 
 ---
 
